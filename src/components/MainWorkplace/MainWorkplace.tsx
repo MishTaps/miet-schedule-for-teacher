@@ -50,7 +50,7 @@ export const MainWorkplace = () => {
         const scheduleData = await getScheduleForGroup(group)
         setGroupsScanned((prev) => prev + 1)
         if (!scheduleData?.Data) continue
-        const lessons = scheduleData.Data.filter((l) => l.Class && l.Class.Teacher === teacher)
+        const lessons = scheduleData.Data.filter((l) => l.Class && l.Class.TeacherFull === teacher)
         if (lessons.length === 0) continue
 
         lessons.forEach((lesson) => {
@@ -106,14 +106,21 @@ export const MainWorkplace = () => {
             style={{ padding: '0 30px' }}
           >
             <Form.Item
-              label="Введите ФИО преподавателя:"
+              label="Введите полные ФИО преподавателя:"
               name="teacherName"
               rules={[
-                { required: true, message: 'Введите ФИО преподавателя в формате Иванов И.И.' },
+                {
+                  required: true,
+                  message: 'Введите полные ФИО преподавателя в формате "Иванов Иван Иванович"',
+                },
               ]}
               required
             >
-              <Input placeholder="Иванов И.И." prefix={<UserOutlined />} style={{ width: '50%' }} />
+              <Input
+                placeholder="Иванов Иван Иванович"
+                prefix={<UserOutlined />}
+                style={{ width: '50%' }}
+              />
             </Form.Item>
             <Form.Item label="Выберите тип недели:" name="weekType" initialValue="allWeekTypes">
               <Tooltip placement="top" title="Функция будет доступна в следующих версиях">
