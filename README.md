@@ -10,14 +10,25 @@
 
    ```powershell
    node -v
-   npm -v
    ```
 
    При необходимости установить `Node.js`: <https://nodejs.org/en/download>
 
-2. Скачать/клонировать репозиторий
-3. Открыть консоль в корневой папке проекта
-4. Ввести команду:
+2. Проверить, что возможно выполнение `npm`:
+
+   ```powershell
+   npm -v
+   ```
+
+   При ошибке выполнить команду:
+
+   ```powershell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+   ```
+
+3. Скачать/клонировать репозиторий
+4. Открыть консоль в корневой папке проекта
+5. Ввести команду:
 
    ```powershell
    npm i
