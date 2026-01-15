@@ -1,0 +1,21 @@
+{
+	"extends": ["stylelint-config-standard-scss", "stylelint-config-clean-order", "stylelint-config-prettier-scss"],
+	"rules": {
+		"import-notation": null,
+		"selector-class-pattern": null,
+		"color-function-notation": null,
+		"custom-property-pattern": null,
+		"selector-pseudo-class-no-unknown": [
+			true,
+			{
+				"ignorePseudoClasses": ["global"]
+			}
+		],
+		"selector-pseudo-element-no-unknown": [
+			true,
+			{
+				"ignorePseudoElements": ["global"]
+			}
+		]
+	}
+}
