@@ -161,6 +161,7 @@ export const MainWorkplace = () => {
                 columns={columnsConfig}
                 pagination={false}
                 scroll={{ x: 'max-content' }}
+                sticky
               />
             </div>
           ) : null}
