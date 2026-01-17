@@ -55,12 +55,12 @@ export const MainWorkplace = () => {
         if (lessons.length === 0) continue
 
         lessons.forEach((lesson) => {
-          const timeCode: number = lesson.Time.Code
+          const timeIndex: number = lesson.Time.Code - 1
           const dayKey: string = `day${lesson.Day + 1}`
           const weekKey = `weekType${lesson.DayNumber}` as keyof WeekTypes
 
-          if (updatedData[timeCode]) {
-            const currentRow = updatedData[timeCode]
+          if (updatedData[timeIndex]) {
+            const currentRow = updatedData[timeIndex]
             const currentDay = (currentRow[dayKey] as WeekTypes) || {
               weekType0: '',
               weekType1: '',
@@ -68,7 +68,7 @@ export const MainWorkplace = () => {
               weekType3: '',
             }
 
-            updatedData[timeCode] = {
+            updatedData[timeIndex] = {
               ...currentRow,
               [dayKey]: {
                 ...currentDay,
