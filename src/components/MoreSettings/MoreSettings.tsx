@@ -20,7 +20,9 @@ export const MoreSettings: React.FC<MoreSettingsProps> = ({
       <div style={{ margin: '0 auto', maxWidth: '400px' }}>
         <Tooltip title="Функция будет доступна в следующих версиях">
           <div className="rowStyle">
-            <span>Скрыть дни, числители, знаменатели без занятий</span>
+            <span style={{ color: 'lightgray' }}>
+              Скрыть дни, числители, знаменатели без занятий
+            </span>
             <Switch checked={hideEmptyDaysTypes} onChange={setHideEmptyDaysTypes} disabled />
           </div>
         </Tooltip>
