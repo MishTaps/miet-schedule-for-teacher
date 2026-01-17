@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react'
 import { columnsConfig, type ScheduleRecord, type WeekTypes } from './columnsConfig.tsx'
 import { dataSource } from './dataSource.tsx'
 import { GroupsService } from '../../data/sources/GroupsService/GroupsService.ts'
+import { MoreSettings } from '../MoreSettings/MoreSettings.tsx'
 
 export const MainWorkplace = () => {
   const [groups, setGroups] = useState<string[]>([])
@@ -27,7 +28,7 @@ export const MainWorkplace = () => {
 
   const [tableData, setTableData] = useState<ScheduleRecord[]>(dataSource)
 
-  const [form] = Form.useForm()
+  const [teacherForm] = Form.useForm()
 
   const { getGroups, getScheduleForGroup } = GroupsService
 
@@ -71,7 +72,7 @@ export const MainWorkplace = () => {
               ...currentRow,
               [dayKey]: {
                 ...currentDay,
-                [weekKey]: `${lesson.Group.Name}\n${lesson.Class.Name}\n${lesson.Room.Name}`,
+                [weekKey]: `${lesson.Class.Name}\n${lesson.Room.Name}`,
               },
             }
           }
@@ -93,11 +94,10 @@ export const MainWorkplace = () => {
           <Typography.Title level={5} style={{ padding: '0 30px', textAlign: 'center' }}>
             Всего найдено групп: {groups?.length}
           </Typography.Title>
-
           <Divider>Заполните форму</Divider>
           <Form
             layout="vertical"
-            form={form}
+            form={teacherForm}
             onFinish={(values) => {
               getSchedule(values.teacherName)
               setLoadingAllGroupsSchedule(true)
@@ -144,13 +144,18 @@ export const MainWorkplace = () => {
               </Button>
             </Form.Item>
           </Form>
-
+          <MoreSettings />
           {loadingAllGroupsSchedule && groupScannedPercent < 100 ? (
-            <Progress
-              percent={groupScannedPercent}
-              status={groupScannedPercent == 100 ? 'success' : 'active'}
-              percentPosition={{ align: 'center', type: 'outer' }}
-            />
+            <div>
+              <div style={{ textAlign: 'center' }}>
+                Загрузка расписания. Это займёт ~1-2 минуты...
+              </div>
+              <Progress
+                percent={groupScannedPercent}
+                status={groupScannedPercent == 100 ? 'success' : 'active'}
+                percentPosition={{ align: 'center', type: 'outer' }}
+              />
+            </div>
           ) : null}
 
           {groupScannedPercent === 100 ? (
