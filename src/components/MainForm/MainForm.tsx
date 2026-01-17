@@ -4,7 +4,7 @@ import type { ScheduleRecord, WeekTypes } from '../MainWorkplace/columnsConfig'
 import { GroupsService } from '../../data/sources'
 
 interface MainForm {
-  setGroupsScanned: (value: (prev: number) => number) => void
+  setGroupsScanned: (value: number | ((prev: number) => number)) => void
   setLoadingAllGroupsSchedule: (value: boolean) => void
   setRawTableData: (value: ScheduleRecord[]) => void
   groups: string[]
@@ -27,6 +27,7 @@ export const MainForm: React.FC<MainForm> = ({
   const { getScheduleForGroup } = GroupsService
 
   const getSchedule = async (teacher: string) => {
+    setGroupsScanned(0)
     const updatedData: ScheduleRecord[] = structuredClone(dataSource)
     const BATCH_SIZE = 10
 
