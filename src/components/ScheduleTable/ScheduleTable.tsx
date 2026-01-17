@@ -1,6 +1,6 @@
 import { Alert, Divider, Table } from 'antd'
 import { columnsConfig, type ScheduleRecord, type WeekTypes } from '../MainWorkplace/columnsConfig'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { dataSource } from '../MainWorkplace/dataSource'
 import _ from 'lodash'
 
@@ -10,6 +10,20 @@ interface ScheduleTable {
 }
 
 export const ScheduleTable: React.FC<ScheduleTable> = ({ hideEmptyRows, rawTableData }) => {
+  const [showAlertTimer, setShowAlertTimer] = useState(false)
+
+  const isScheduleEmpty = _.isEqual(rawTableData, dataSource)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowAlertTimer(isScheduleEmpty)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [isScheduleEmpty])
+
+  const showAlert = showAlertTimer
+
   const isRowEmpty = (row: ScheduleRecord) => {
     return Object.keys(row)
       .filter((key) => key.startsWith('day'))
@@ -26,11 +40,10 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ hideEmptyRows, rawTable
     return rawTableData.filter((row) => !isRowEmpty(row))
   }, [rawTableData, hideEmptyRows])
 
-  const isScheduleEmpty = _.isEqual(rawTableData, dataSource)
   return (
     <>
       <Divider>Расписание преподавателя готово!</Divider>
-      {isScheduleEmpty && (
+      {showAlert && (
         <Alert
           title="Внимание"
           description="У введённого преподавателя отсутствуют занятия. Возможно, неверно введено ФИО. Если в ФИО есть буква Ё, попробуйте заменить её на Е или наоборот."
