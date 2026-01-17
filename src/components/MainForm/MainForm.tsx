@@ -49,7 +49,7 @@ export const MainForm: React.FC<MainForm> = ({
 
             lessons.forEach((lesson) => {
               const timeIndex = lesson.Time.Code - 1
-              const dayKey = `day${lesson.Day + 1}`
+              const dayKey = `day${lesson.Day}`
               const weekKey = `weekType${lesson.DayNumber}` as keyof WeekTypes
 
               if (!updatedData[timeIndex]) return

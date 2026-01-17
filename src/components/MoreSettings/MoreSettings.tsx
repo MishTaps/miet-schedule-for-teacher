@@ -27,7 +27,7 @@ export const MoreSettings: React.FC<MoreSettingsProps> = ({
           </div>
         </Tooltip>
         <div className="rowStyle">
-          <span>Скрыть пары без занятий (beta)</span>
+          <span>Скрыть пары без занятий</span>
           <Switch checked={hideEmptyRows} onChange={setHideEmptyRows} />
         </div>
       </div>
