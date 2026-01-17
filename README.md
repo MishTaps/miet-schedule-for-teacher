@@ -8,7 +8,7 @@
 
 1. Проверить, что установлен `Node.js`:
 
-   ```powershell
+   ```bash
    node -v
    ```
 
@@ -16,21 +16,21 @@
 
 2. Проверить, что возможно выполнение `npm`:
 
-   ```powershell
+   ```bash
    npm -v
    ```
 
-   При ошибке выполнить команду:
+   При ошибке выполнить команду (если работаете на ОС Windows):
 
    ```powershell
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
    ```
 
 3. Скачать/клонировать репозиторий
-4. Открыть консоль в корневой папке проекта
+4. Открыть терминал (PowerShell / Terminal / ...) в корневой папке проекта
 5. Ввести команду:
 
-   ```powershell
+   ```bash
    npm i
    ```
 
@@ -38,13 +38,13 @@
 
 1. Ввести команду:
 
-   ```powershell
+   ```bash
    npm run build
    ```
 
 2. Ввести команду:
 
-   ```powershell
+   ```bash
    npm run preview
    ```
 
@@ -54,7 +54,7 @@
 
 1. Ввести команду:
 
-   ```powershell
+   ```bash
    npm run dev
    ```
 
