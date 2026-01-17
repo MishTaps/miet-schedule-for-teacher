@@ -1,18 +1,32 @@
-import { Divider, Switch } from 'antd'
+import { Divider, Switch, Tooltip } from 'antd'
 import './MoreSettings.css'
 
-export const MoreSettings = () => {
+interface MoreSettingsProps {
+  hideEmptyDaysTypes: boolean
+  setHideEmptyDaysTypes: (value: boolean) => void
+  hideEmptyRows: boolean
+  setHideEmptyRows: (value: boolean) => void
+}
+
+export const MoreSettings: React.FC<MoreSettingsProps> = ({
+  hideEmptyDaysTypes,
+  setHideEmptyDaysTypes,
+  hideEmptyRows,
+  setHideEmptyRows,
+}) => {
   return (
-    <div style={{ display: 'none' }}>
-      <Divider>Расширенные настройки</Divider>
-      <div style={{ width: '300', margin: '0 auto', maxWidth: '400px' }}>
+    <div>
+      <Divider>Расширенные настройки:</Divider>
+      <div style={{ margin: '0 auto', maxWidth: '400px' }}>
+        <Tooltip title="Функция будет доступна в следующих версиях">
+          <div className="rowStyle">
+            <span>Скрыть дни, числители, знаменатели без занятий</span>
+            <Switch checked={hideEmptyDaysTypes} onChange={setHideEmptyDaysTypes} disabled />
+          </div>
+        </Tooltip>
         <div className="rowStyle">
-          <span>Показывать дни недели, числители, знаменатели без занятий</span>
-          <Switch disabled checked />
-        </div>
-        <div className="rowStyle">
-          <span>Показывать пары (время и номер) без занятий</span>
-          <Switch disabled checked />
+          <span>Скрыть пары без занятий (beta)</span>
+          <Switch checked={hideEmptyRows} onChange={setHideEmptyRows} />
         </div>
       </div>
     </div>
