@@ -11,6 +11,7 @@ interface MainForm {
   dataSource: ScheduleRecord[]
   loadingGroups: boolean
   loadingAllGroupsSchedule: boolean
+  isGroupsLoadedWithError: boolean
 }
 
 export const MainForm: React.FC<MainForm> = ({
@@ -21,6 +22,7 @@ export const MainForm: React.FC<MainForm> = ({
   dataSource,
   loadingGroups,
   loadingAllGroupsSchedule,
+  isGroupsLoadedWithError,
 }) => {
   const [form] = Form.useForm()
 
@@ -71,7 +73,7 @@ export const MainForm: React.FC<MainForm> = ({
               }
             })
           } catch (e) {
-            message.error(`Ошибка при загрузке расписания группы ${group}`)
+            message.error(`Ошибка при загрузке расписания группы ${group}`, 10)
             console.error(`Ошибка при загрузке группы ${group}:`, e)
           }
         }),
@@ -83,7 +85,7 @@ export const MainForm: React.FC<MainForm> = ({
   }
 
   return (
-    <>
+    <div style={isGroupsLoadedWithError ? { display: 'none' } : { display: 'block' }}>
       <Divider>Заполните форму:</Divider>
       <Form
         layout="vertical"
@@ -135,6 +137,6 @@ export const MainForm: React.FC<MainForm> = ({
           </Button>
         </Form.Item>
       </Form>
-    </>
+    </div>
   )
 }

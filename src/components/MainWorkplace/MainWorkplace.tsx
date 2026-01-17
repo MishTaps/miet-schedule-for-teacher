@@ -1,4 +1,4 @@
-import { Spin } from 'antd'
+import { Result, Spin } from 'antd'
 import './MainWorkplace.css'
 import { useEffect, useState } from 'react'
 
@@ -20,6 +20,7 @@ export const MainWorkplace = () => {
   const [hideEmptyRows, setHideEmptyRows] = useState(false)
 
   const [loadingGroups, setLoadingGroups] = useState(true)
+  const [isGroupsLoadedWithError, setIsGroupsLoadedWithError] = useState(false)
   const [loadingAllGroupsSchedule, setLoadingAllGroupsSchedule] = useState(false)
 
   const [rawTableData, setRawTableData] = useState<ScheduleRecord[]>(dataSource)
@@ -28,9 +29,16 @@ export const MainWorkplace = () => {
 
   useEffect(() => {
     const fetchGroups = async () => {
-      const groupsData = await getGroups()
-      setGroups(groupsData || [])
-      setLoadingGroups(false)
+      try {
+        const groupsData = await getGroups()
+        setGroups(groupsData)
+      } catch (error) {
+        if (error instanceof Error) {
+          setIsGroupsLoadedWithError(true)
+        }
+      } finally {
+        setLoadingGroups(false)
+      }
     }
 
     fetchGroups()
@@ -40,6 +48,7 @@ export const MainWorkplace = () => {
     <main>
       <Spin spinning={loadingGroups} tip="Получение списка групп...">
         <GroupFound groups={groups} />
+
         <MainForm
           setGroupsScanned={setGroupsScanned}
           setLoadingAllGroupsSchedule={setLoadingAllGroupsSchedule}
@@ -48,7 +57,16 @@ export const MainWorkplace = () => {
           loadingAllGroupsSchedule={loadingAllGroupsSchedule}
           groups={groups}
           dataSource={dataSource}
+          isGroupsLoadedWithError={isGroupsLoadedWithError}
         />
+
+        {isGroupsLoadedWithError && (
+          <Result
+            status="500"
+            title="Ошибка сервера"
+            subTitle="Не удалось загрузить группы. Попробуйте перезагрузить страницу."
+          />
+        )}
 
         {(loadingAllGroupsSchedule || groupScannedPercent == 100) && (
           <MoreSettings

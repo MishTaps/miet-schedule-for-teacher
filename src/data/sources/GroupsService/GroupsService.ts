@@ -1,39 +1,27 @@
-import axios from 'axios'
 import type { ScheduleResponse } from '../../../types'
-import { message } from 'antd'
-
-const api = axios.create({
-  baseURL: '/',
-})
-
-async function getGroups() {
-  try {
-    const response = await api.get<string[]>('/api/schedule/groups')
-    if (response.data.length === 0) {
-      message.open({
-        type: 'error',
-        content: 'Список групп пуст. Возможно, произошла ошибка на сервере.',
-        duration: 5,
-      })
-    }
-    return response.data
-  } catch (error) {
-    console.error('Ошибка запроса групп:', error)
-    return null
-  }
-}
-
-async function getScheduleForGroup(group: string) {
-  try {
-    const response = await api.get<ScheduleResponse>(`/api/schedule/data`, { params: { group } })
-    return response.data
-  } catch (error) {
-    console.error('Ошибка запроса расписания:', error)
-    return null
-  }
-}
+import api from '../api'
 
 export const GroupsService = {
-  getGroups,
-  getScheduleForGroup,
+  async getGroups(): Promise<string[]> {
+    try {
+      const { data } = await api.get<string[]>('/groups')
+      if (!data || data.length === 0) {
+        throw new Error('EMPTY_GROUPS')
+      }
+      if (!Array.isArray(data)) {
+        throw new Error('INVALID_GROUPS_FORMAT')
+      }
+      return data
+    } catch (error) {
+      console.error('Ошибка при получении групп:', error)
+      throw error
+    }
+  },
+
+  async getScheduleForGroup(group: string): Promise<ScheduleResponse> {
+    const { data } = await api.get<ScheduleResponse>('/data', {
+      params: { group },
+    })
+    return data
+  },
 }
