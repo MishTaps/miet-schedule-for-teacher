@@ -31,14 +31,14 @@ const getWeekTypeColumns = (dayKey: string) => [
     className: 'column',
   },
   {
-    title: 'Ч-II',
+    title: 'З-I',
     dataIndex: [dayKey, 'weekType1'],
     key: `${dayKey}weekType1`,
     render: (text: string) => <div style={{ whiteSpace: 'pre-line' }}>{text}</div>,
     className: 'column',
   },
   {
-    title: 'З-I',
+    title: 'Ч-II',
     dataIndex: [dayKey, 'weekType2'],
     key: `${dayKey}weekType2`,
     render: (text: string) => <div style={{ whiteSpace: 'pre-line' }}>{text}</div>,
