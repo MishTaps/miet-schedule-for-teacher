@@ -66,7 +66,7 @@ export const MainForm: React.FC<MainForm> = ({
                 ...currentRow,
                 [dayKey]: {
                   ...currentDay,
-                  [weekKey]: `${lesson.Class.Name}\n${lesson.Room.Name}`,
+                  [weekKey]: `${lesson.Group.Name}\n${lesson.Class.Name}\n${lesson.Room.Name}`,
                 },
               }
             })

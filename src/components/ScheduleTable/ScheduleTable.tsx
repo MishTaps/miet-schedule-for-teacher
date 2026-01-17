@@ -1,6 +1,8 @@
-import { Divider, Table } from 'antd'
+import { Alert, Divider, Table } from 'antd'
 import { columnsConfig, type ScheduleRecord, type WeekTypes } from '../MainWorkplace/columnsConfig'
 import { useMemo } from 'react'
+import { dataSource } from '../MainWorkplace/dataSource'
+import _ from 'lodash'
 
 interface ScheduleTable {
   hideEmptyRows: boolean
@@ -24,9 +26,19 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ hideEmptyRows, rawTable
     return rawTableData.filter((row) => !isRowEmpty(row))
   }, [rawTableData, hideEmptyRows])
 
+  const isScheduleEmpty = _.isEqual(rawTableData, dataSource)
   return (
     <>
       <Divider>Расписание преподавателя готово!</Divider>
+      {isScheduleEmpty && (
+        <Alert
+          title="Внимание"
+          description="У введённого преподавателя отсутствуют занятия. Возможно, неверно введено ФИО. Если в ФИО есть буква Ё, попробуйте заменить её на Е или наоборот."
+          type="warning"
+          showIcon
+          closable
+        />
+      )}
       <Table
         dataSource={visibleTableData}
         columns={columnsConfig}
