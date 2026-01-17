@@ -17,7 +17,7 @@ export const MoreSettings: React.FC<MoreSettingsProps> = ({
   return (
     <div>
       <Divider>Расширенные настройки:</Divider>
-      <div style={{ margin: '0 auto', maxWidth: '400px' }}>
+      <div style={{ padding: '0 30px', margin: '0 auto', maxWidth: '400px' }}>
         <Tooltip title="Функция будет доступна в следующих версиях">
           <div className="rowStyle">
             <span style={{ color: 'lightgray' }}>

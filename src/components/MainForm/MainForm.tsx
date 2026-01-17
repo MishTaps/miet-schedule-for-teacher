@@ -95,7 +95,7 @@ export const MainForm: React.FC<MainForm> = ({
           setLoadingAllGroupsSchedule(true)
         }}
         disabled={loadingGroups || loadingAllGroupsSchedule}
-        style={{ padding: '0 30px' }}
+        style={{ padding: '0 30px', margin: '0 auto', maxWidth: '400px' }}
       >
         <Form.Item
           label="Введите полные ФИО преподавателя:"
@@ -107,18 +107,13 @@ export const MainForm: React.FC<MainForm> = ({
             },
           ]}
         >
-          <Input
-            placeholder="Иванов Иван Иванович"
-            prefix={<UserOutlined />}
-            style={{ width: '50%' }}
-          />
+          <Input placeholder="Иванов Иван Иванович" prefix={<UserOutlined />} />
         </Form.Item>
 
         <Form.Item label="Выберите тип недели:" name="weekType" initialValue="allWeekTypes">
           <Tooltip title="Функция будет доступна в следующих версиях">
             <Select
               disabled
-              style={{ width: '50%' }}
               options={[
                 { value: 'weekType0', label: 'Числитель I' },
                 { value: 'weekType1', label: 'Знаменатель I' },
@@ -132,7 +127,12 @@ export const MainForm: React.FC<MainForm> = ({
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" icon={<SearchOutlined />} htmlType="submit">
+          <Button
+            type="primary"
+            icon={<SearchOutlined />}
+            htmlType="submit"
+            style={{ width: '100%' }}
+          >
             Показать расписание
           </Button>
         </Form.Item>
