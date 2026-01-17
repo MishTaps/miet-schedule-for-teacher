@@ -1,4 +1,4 @@
-import { Button, Divider, Form, Input, Select, Tooltip } from 'antd'
+import { Button, Divider, Form, Input, message, Select, Tooltip } from 'antd'
 import { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import type { ScheduleRecord, WeekTypes } from '../MainWorkplace/columnsConfig'
 import { GroupsService } from '../../data/sources'
@@ -28,40 +28,53 @@ export const MainForm: React.FC<MainForm> = ({
 
   const getSchedule = async (teacher: string) => {
     const updatedData: ScheduleRecord[] = structuredClone(dataSource)
+    const BATCH_SIZE = 10
 
-    for (const group of groups) {
-      try {
-        const scheduleData = await getScheduleForGroup(group)
-        setGroupsScanned((prev: number) => prev + 1)
-        if (!scheduleData?.Data) continue
-        const lessons = scheduleData.Data.filter((l) => l.Class && l.Class.TeacherFull === teacher)
-        if (lessons.length === 0) continue
-        lessons.forEach((lesson) => {
-          const timeIndex = lesson.Time.Code - 1
-          const dayKey = `day${lesson.Day + 1}`
-          const weekKey = `weekType${lesson.DayNumber}` as keyof WeekTypes
+    for (let i = 0; i < groups.length; i += BATCH_SIZE) {
+      const batch = groups.slice(i, i + BATCH_SIZE)
+      await Promise.all(
+        batch.map(async (group) => {
+          try {
+            const scheduleData = await getScheduleForGroup(group)
+            setGroupsScanned((prev: number) => prev + 1)
 
-          if (!updatedData[timeIndex]) return
+            if (!scheduleData?.Data) return
 
-          const currentRow = updatedData[timeIndex]
-          const currentDay = (currentRow[dayKey] as WeekTypes) ?? {
-            weekType0: '',
-            weekType1: '',
-            weekType2: '',
-            weekType3: '',
+            const lessons = scheduleData.Data.filter(
+              (l) => l.Class && l.Class.TeacherFull === teacher,
+            )
+
+            if (lessons.length === 0) return
+
+            lessons.forEach((lesson) => {
+              const timeIndex = lesson.Time.Code - 1
+              const dayKey = `day${lesson.Day + 1}`
+              const weekKey = `weekType${lesson.DayNumber}` as keyof WeekTypes
+
+              if (!updatedData[timeIndex]) return
+
+              const currentRow = updatedData[timeIndex]
+              const currentDay = (currentRow[dayKey] as WeekTypes) ?? {
+                weekType0: '',
+                weekType1: '',
+                weekType2: '',
+                weekType3: '',
+              }
+
+              updatedData[timeIndex] = {
+                ...currentRow,
+                [dayKey]: {
+                  ...currentDay,
+                  [weekKey]: `${lesson.Class.Name}\n${lesson.Room.Name}`,
+                },
+              }
+            })
+          } catch (e) {
+            message.error(`Ошибка при загрузке расписания группы ${group}`)
+            console.error(`Ошибка при загрузке группы ${group}:`, e)
           }
-
-          updatedData[timeIndex] = {
-            ...currentRow,
-            [dayKey]: {
-              ...currentDay,
-              [weekKey]: `${lesson.Class.Name}\n${lesson.Room.Name}`,
-            },
-          }
-        })
-      } catch (e) {
-        console.error(e)
-      }
+        }),
+      )
     }
 
     setRawTableData(updatedData)

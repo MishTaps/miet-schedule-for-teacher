@@ -9,7 +9,7 @@ export const LoadingProgressBar: React.FC<LoadingProgressBar> = ({ groupScannedP
     <>
       <Divider>Загрузка расписания...</Divider>
       <div style={{ textAlign: 'center' }}>
-        Это займёт ~1–2 минуты. Пока можете ознакомиться с расширенными настройками.
+        А пока можете ознакомиться с расширенными настройками.
       </div>
       <Progress
         percent={groupScannedPercent}
