@@ -1,7 +1,6 @@
 export * from './Header'
 export * from './MainWorkplace'
 export * from './Footer'
-export * from './MoreSettings'
 export * from './GroupFound'
 export * from './LoadingProgressBar'
 export * from './ScheduleTable'

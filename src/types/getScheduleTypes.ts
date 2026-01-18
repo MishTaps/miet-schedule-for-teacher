@@ -23,7 +23,7 @@ interface ScheduleRoom {
   Name: string
 }
 
-interface ScheduleDataItem {
+export interface ScheduleDataItem {
   Day: number
   DayNumber: number
   Time: ScheduleTime

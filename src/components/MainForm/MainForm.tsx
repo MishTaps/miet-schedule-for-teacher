@@ -1,115 +1,41 @@
-import { Button, Divider, Form, Input, message, Select, Tooltip } from 'antd'
-import { SearchOutlined, UserOutlined } from '@ant-design/icons'
-import type { ScheduleRecord, WeekTypes } from '../MainWorkplace/columnsConfig'
-import { GroupsService } from '../../data/sources'
-
+import { Divider, Form, Select, Switch, Tooltip } from 'antd'
+import './MainForm.css'
+import { useMemo } from 'react'
 interface MainForm {
-  setGroupsScanned: (value: number | ((prev: number) => number)) => void
-  setLoadingAllGroupsSchedule: (value: boolean) => void
-  setRawTableData: (value: ScheduleRecord[]) => void
-  groups: string[]
-  dataSource: ScheduleRecord[]
-  loadingGroups: boolean
-  loadingAllGroupsSchedule: boolean
-  isGroupsLoadedWithError: boolean
+  teachers: string[]
+  setSelectedTeacher: (value: string | null) => void
+  hideEmptyDaysTypes: boolean
+  setHideEmptyDaysTypes: (value: boolean) => void
+  hideEmptyRows: boolean
+  setHideEmptyRows: (value: boolean) => void
 }
 
 export const MainForm: React.FC<MainForm> = ({
-  setGroupsScanned,
-  setLoadingAllGroupsSchedule,
-  setRawTableData,
-  groups,
-  dataSource,
-  loadingGroups,
-  loadingAllGroupsSchedule,
-  isGroupsLoadedWithError,
+  teachers,
+  setSelectedTeacher,
+  hideEmptyDaysTypes,
+  setHideEmptyDaysTypes,
+  hideEmptyRows,
+  setHideEmptyRows,
 }) => {
-  const [form] = Form.useForm()
-
-  const { getScheduleForGroup } = GroupsService
-
-  const getSchedule = async (teacher: string) => {
-    setGroupsScanned(0)
-    const updatedData: ScheduleRecord[] = structuredClone(dataSource)
-    const BATCH_SIZE = 10
-
-    for (let i = 0; i < groups.length; i += BATCH_SIZE) {
-      const batch = groups.slice(i, i + BATCH_SIZE)
-      await Promise.all(
-        batch.map(async (group) => {
-          try {
-            const scheduleData = await getScheduleForGroup(group)
-            setGroupsScanned((prev: number) => prev + 1)
-
-            if (!scheduleData?.Data) return
-
-            const lessons = scheduleData.Data.filter(
-              (l) => l.Class && l.Class.TeacherFull === teacher,
-            )
-
-            if (lessons.length === 0) return
-
-            lessons.forEach((lesson) => {
-              const timeIndex = lesson.Time.Code - 1
-              const dayKey = `day${lesson.Day}`
-              const weekKey = `weekType${lesson.DayNumber}` as keyof WeekTypes
-
-              if (!updatedData[timeIndex]) return
-
-              const currentRow = updatedData[timeIndex]
-              const currentDay = (currentRow[dayKey] as WeekTypes) ?? {
-                weekType0: '',
-                weekType1: '',
-                weekType2: '',
-                weekType3: '',
-              }
-
-              updatedData[timeIndex] = {
-                ...currentRow,
-                [dayKey]: {
-                  ...currentDay,
-                  [weekKey]: `${lesson.Group.Name}\n${lesson.Class.Name}\n${lesson.Room.Name}`,
-                },
-              }
-            })
-          } catch (e) {
-            message.error(`Ошибка при загрузке расписания группы ${group}`, 10)
-            console.error(`Ошибка при загрузке группы ${group}:`, e)
-          }
-        }),
-      )
-    }
-
-    setRawTableData(updatedData)
-    setLoadingAllGroupsSchedule(false)
-  }
+  const teacherOptions = useMemo(() => teachers.map((t) => ({ label: t, value: t })), [teachers])
 
   return (
-    <div style={isGroupsLoadedWithError ? { display: 'none' } : { display: 'block' }}>
+    <div>
       <Divider>Заполните форму:</Divider>
-      <Form
-        layout="vertical"
-        form={form}
-        onFinish={(values) => {
-          getSchedule(values.teacherName)
-          setLoadingAllGroupsSchedule(true)
-        }}
-        disabled={loadingGroups || loadingAllGroupsSchedule}
-        style={{ padding: '0 30px', margin: '0 auto', maxWidth: '400px' }}
-      >
-        <Form.Item
-          label="Введите полные ФИО преподавателя:"
-          name="teacherName"
-          rules={[
-            {
-              required: true,
-              message: 'Введите полные ФИО преподавателя в формате "Иванов Иван Иванович"',
-            },
-          ]}
-        >
-          <Input placeholder="Иванов Иван Иванович" prefix={<UserOutlined />} />
+      <Form layout="vertical" style={{ maxWidth: '500px', margin: '0 auto', padding: '0 20px' }}>
+        <Form.Item label="Выберите преподавателя:">
+          <Select
+            showSearch
+            virtual
+            listHeight={256}
+            listItemHeight={32}
+            getPopupContainer={(trigger) => trigger.parentElement}
+            placeholder="Иванов Иван Иванович"
+            options={teacherOptions}
+            onChange={setSelectedTeacher}
+          />
         </Form.Item>
-
         <Form.Item label="Выберите тип недели:" name="weekType" initialValue="allWeekTypes">
           <Tooltip title="Функция будет доступна в следующих версиях">
             <Select
@@ -125,17 +51,18 @@ export const MainForm: React.FC<MainForm> = ({
             />
           </Tooltip>
         </Form.Item>
-
-        <Form.Item>
-          <Button
-            type="primary"
-            icon={<SearchOutlined />}
-            htmlType="submit"
-            style={{ width: '100%' }}
-          >
-            Показать расписание
-          </Button>
-        </Form.Item>
+        <Tooltip title="Функция будет доступна в следующих версиях">
+          <div className="rowStyle">
+            <span style={{ color: 'lightgray' }}>
+              Скрыть дни, числители, знаменатели без занятий
+            </span>
+            <Switch checked={hideEmptyDaysTypes} onChange={setHideEmptyDaysTypes} disabled />
+          </div>
+        </Tooltip>
+        <div className="rowStyle">
+          <span>Скрыть пары без занятий</span>
+          <Switch checked={hideEmptyRows} onChange={setHideEmptyRows} />
+        </div>
       </Form>
     </div>
   )
