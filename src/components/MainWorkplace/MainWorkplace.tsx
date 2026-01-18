@@ -1,4 +1,4 @@
-import { Result, Spin } from 'antd'
+import { Button, Result, Spin } from 'antd'
 import './MainWorkplace.css'
 import { useEffect, useState } from 'react'
 
@@ -10,8 +10,14 @@ import { GroupFound } from '../GroupFound'
 import { MainForm } from '../MainForm'
 import { LoadingProgressBar } from '../LoadingProgressBar'
 import { ScheduleTable } from '../ScheduleTable'
+import { ExportOutlined } from '@ant-design/icons'
+import { messages } from './messages'
 
-export const MainWorkplace = () => {
+interface MainWorkplace {
+  isOpenedOnFreeServer: boolean
+}
+
+export const MainWorkplace: React.FC<MainWorkplace> = ({ isOpenedOnFreeServer }) => {
   const [groups, setGroups] = useState<string[]>([])
   const [groupsScanned, setGroupsScanned] = useState(0)
   const groupScannedPercent = Math.round((groupsScanned / (groups.length || 1)) * 100)
@@ -64,7 +70,19 @@ export const MainWorkplace = () => {
           <Result
             status="500"
             title="Ошибка сервера"
-            subTitle="Не удалось загрузить группы. Попробуйте перезагрузить страницу."
+            subTitle={isOpenedOnFreeServer ? messages.onlineServer : messages.localServer}
+            extra={
+              isOpenedOnFreeServer ? (
+                <Button
+                  type="primary"
+                  href="https://github.com/MishTaps/miet-schedule-for-teacher/tree/main?tab=readme-ov-file#%D0%B7%D0%B0%D0%BF%D1%83%D1%81%D0%BA-%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D1%8B-%D0%BB%D0%BE%D0%BA%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE"
+                  target="_blank"
+                >
+                  Узнать, как развернуть локально
+                  <ExportOutlined />
+                </Button>
+              ) : null
+            }
           />
         )}
 
@@ -78,7 +96,10 @@ export const MainWorkplace = () => {
         )}
 
         {loadingAllGroupsSchedule && groupScannedPercent < 100 && (
-          <LoadingProgressBar groupScannedPercent={groupScannedPercent} />
+          <LoadingProgressBar
+            groupScannedPercent={groupScannedPercent}
+            isOpenedOnFreeServer={isOpenedOnFreeServer}
+          />
         )}
 
         {groupScannedPercent === 100 && (

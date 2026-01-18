@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .eslintcache
+.vercel
 
 # Editor directories and files
 .vscode/*
