@@ -1,4 +1,4 @@
-import { Divider, Form, Select, Switch, Tooltip } from 'antd'
+import { Divider, Form, Select, Switch } from 'antd'
 import './MainForm.css'
 import { useMemo } from 'react'
 interface MainForm {
@@ -51,14 +51,10 @@ export const MainForm: React.FC<MainForm> = ({
             onChange={setSelectedWeekType}
           />
         </Form.Item>
-        <Tooltip title="Функция будет доступна в следующих версиях">
-          <div className="rowStyle">
-            <span style={{ color: 'lightgray' }}>
-              Скрыть дни, числители, знаменатели без занятий
-            </span>
-            <Switch checked={hideEmptyDaysTypes} onChange={setHideEmptyDaysTypes} disabled />
-          </div>
-        </Tooltip>
+        <div className="rowStyle">
+          <span>Скрыть дни, числители, знаменатели без занятий</span>
+          <Switch checked={hideEmptyDaysTypes} onChange={setHideEmptyDaysTypes} />
+        </div>
         <div className="rowStyle">
           <span>Скрыть пары без занятий</span>
           <Switch checked={hideEmptyRows} onChange={setHideEmptyRows} />

@@ -6,29 +6,53 @@ interface ScheduleTable {
   hideEmptyRows: boolean
   rawTableData: ScheduleRecord[]
   selectedWeekType: string
+  hideEmptyDaysTypes: boolean
 }
 
 export const ScheduleTable: React.FC<ScheduleTable> = ({
   hideEmptyRows,
   rawTableData,
   selectedWeekType,
+  hideEmptyDaysTypes,
 }) => {
   const visibleColumns = useMemo(() => {
-    if (selectedWeekType === 'allWeekTypes') return columnsConfig
-
-    return columnsConfig.map((column) => {
-      if (!('children' in column)) return column
-
-      const filteredChildren = column.children?.filter((child) => {
-        return child.key?.toString().endsWith(selectedWeekType)
+    const isWeekTypeColumnEmpty = (dayKey: string, weekType: string) => {
+      return rawTableData.every((row) => {
+        const day = row[dayKey] as WeekTypes | undefined
+        const value = day?.[weekType]
+        return typeof value !== 'string' || value.trim() === ''
       })
+    }
 
-      return {
-        ...column,
-        children: filteredChildren,
-      }
-    })
-  }, [selectedWeekType])
+    return columnsConfig
+      .map((column) => {
+        if (!('children' in column)) return column
+
+        const dayKey = column.children?.[0]?.dataIndex?.[0] as string
+        if (!dayKey) return null
+
+        const children = column.children
+          .filter((child) => {
+            if (selectedWeekType === 'allWeekTypes') return true
+            return (child.dataIndex as string[])[1] === selectedWeekType
+          })
+          .filter((child) => {
+            if (!hideEmptyDaysTypes) return true
+            const [, weekType] = child.dataIndex as string[]
+            return !isWeekTypeColumnEmpty(dayKey, weekType)
+          })
+
+        if (children.length === 0) {
+          return null
+        }
+
+        return {
+          ...column,
+          children,
+        }
+      })
+      .filter(Boolean)
+  }, [rawTableData, selectedWeekType, hideEmptyDaysTypes])
 
   const visibleTableData = useMemo(() => {
     const isRowEmpty = (row: ScheduleRecord) => {

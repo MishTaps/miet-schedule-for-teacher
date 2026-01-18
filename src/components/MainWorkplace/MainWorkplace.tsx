@@ -194,6 +194,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             hideEmptyRows={hideEmptyRows}
             rawTableData={rawTableData}
             selectedWeekType={selectedWeekType}
+            hideEmptyDaysTypes={hideEmptyDaysTypes}
           />
         )}
       </main>
