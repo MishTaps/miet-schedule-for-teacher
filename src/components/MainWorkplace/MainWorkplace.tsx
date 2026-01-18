@@ -5,16 +5,13 @@ import { SearchOutlined } from '@ant-design/icons'
 
 import './MainWorkplace.css'
 
-import { GroupsService } from '../../data/sources/GroupsService/GroupsService'
 import { dataSource } from './dataSource'
 import { type ScheduleRecord, type WeekTypes } from './columnsConfig'
 
-import { GroupFound } from '../GroupFound'
-import { MainForm } from '../MainForm'
-import { LoadingProgressBar } from '../LoadingProgressBar'
-import { ScheduleTable } from '../ScheduleTable'
 import { messages } from './messages'
 import type { ScheduleDataItem } from '../../types'
+import { GroupFound, LoadingProgressBar, MainForm, ScheduleTable } from '..'
+import { GroupsService } from '../../data'
 
 interface MainWorkplaceProps {
   isOpenedOnFreeServer: boolean
