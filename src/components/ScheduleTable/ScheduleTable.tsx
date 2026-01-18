@@ -1,60 +1,60 @@
-import { Alert, Divider, Table } from 'antd'
+import { Divider, Table } from 'antd'
 import { columnsConfig, type ScheduleRecord, type WeekTypes } from '../MainWorkplace/columnsConfig'
-import { useEffect, useMemo, useState } from 'react'
-import { dataSource } from '../MainWorkplace/dataSource'
-import _ from 'lodash'
+import { useMemo } from 'react'
 
 interface ScheduleTable {
   hideEmptyRows: boolean
   rawTableData: ScheduleRecord[]
+  selectedWeekType: string
 }
 
-export const ScheduleTable: React.FC<ScheduleTable> = ({ hideEmptyRows, rawTableData }) => {
-  const [showAlertTimer, setShowAlertTimer] = useState(false)
+export const ScheduleTable: React.FC<ScheduleTable> = ({
+  hideEmptyRows,
+  rawTableData,
+  selectedWeekType,
+}) => {
+  const visibleColumns = useMemo(() => {
+    if (selectedWeekType === 'allWeekTypes') return columnsConfig
 
-  const isScheduleEmpty = _.isEqual(rawTableData, dataSource)
+    return columnsConfig.map((column) => {
+      if (!('children' in column)) return column
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowAlertTimer(isScheduleEmpty)
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [isScheduleEmpty])
-
-  const showAlert = showAlertTimer
-
-  const isRowEmpty = (row: ScheduleRecord) => {
-    return Object.keys(row)
-      .filter((key) => key.startsWith('day'))
-      .every((dayKey) => {
-        const day = row[dayKey] as WeekTypes | undefined
-        if (!day) return true
-
-        return Object.values(day).every((v) => typeof v !== 'string' || v.trim() === '')
+      const filteredChildren = column.children?.filter((child) => {
+        return child.key?.toString().endsWith(selectedWeekType)
       })
-  }
+
+      return {
+        ...column,
+        children: filteredChildren,
+      }
+    })
+  }, [selectedWeekType])
 
   const visibleTableData = useMemo(() => {
+    const isRowEmpty = (row: ScheduleRecord) => {
+      return Object.keys(row)
+        .filter((key) => key.startsWith('day'))
+        .every((dayKey) => {
+          const day = row[dayKey] as WeekTypes | undefined
+          if (!day) return true
+          if (selectedWeekType === 'allWeekTypes') {
+            return Object.values(day).every((v) => typeof v !== 'string' || v.trim() === '')
+          }
+          const value = day[selectedWeekType]
+          return typeof value !== 'string' || value.trim() === ''
+        })
+    }
+
     if (!hideEmptyRows) return rawTableData
     return rawTableData.filter((row) => !isRowEmpty(row))
-  }, [rawTableData, hideEmptyRows])
+  }, [hideEmptyRows, rawTableData, selectedWeekType])
 
   return (
     <>
       <Divider>Расписание преподавателя готово!</Divider>
-      {showAlert && (
-        <Alert
-          title="Внимание"
-          description="У введённого преподавателя отсутствуют занятия. Возможно, неверно введено ФИО. Если в ФИО есть буква Ё, попробуйте заменить её на Е или наоборот."
-          type="warning"
-          showIcon
-          closable
-        />
-      )}
       <Table
         dataSource={visibleTableData}
-        columns={columnsConfig}
+        columns={visibleColumns}
         pagination={false}
         scroll={{ x: 'max-content' }}
         locale={{

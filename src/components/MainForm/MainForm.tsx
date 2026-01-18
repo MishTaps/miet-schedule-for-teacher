@@ -8,6 +8,7 @@ interface MainForm {
   setHideEmptyDaysTypes: (value: boolean) => void
   hideEmptyRows: boolean
   setHideEmptyRows: (value: boolean) => void
+  setSelectedWeekType: (value: string) => void
 }
 
 export const MainForm: React.FC<MainForm> = ({
@@ -17,6 +18,7 @@ export const MainForm: React.FC<MainForm> = ({
   setHideEmptyDaysTypes,
   hideEmptyRows,
   setHideEmptyRows,
+  setSelectedWeekType,
 }) => {
   const teacherOptions = useMemo(() => teachers.map((t) => ({ label: t, value: t })), [teachers])
 
@@ -37,19 +39,17 @@ export const MainForm: React.FC<MainForm> = ({
           />
         </Form.Item>
         <Form.Item label="Выберите тип недели:" name="weekType" initialValue="allWeekTypes">
-          <Tooltip title="Функция будет доступна в следующих версиях">
-            <Select
-              disabled
-              options={[
-                { value: 'weekType0', label: 'Числитель I' },
-                { value: 'weekType1', label: 'Знаменатель I' },
-                { value: 'weekType2', label: 'Числитель II' },
-                { value: 'weekType3', label: 'Знаменатель II' },
-                { value: 'allWeekTypes', label: 'Полное расписание' },
-              ]}
-              defaultValue="allWeekTypes"
-            />
-          </Tooltip>
+          <Select
+            options={[
+              { value: 'weekType0', label: 'Числитель I' },
+              { value: 'weekType1', label: 'Знаменатель I' },
+              { value: 'weekType2', label: 'Числитель II' },
+              { value: 'weekType3', label: 'Знаменатель II' },
+              { value: 'allWeekTypes', label: 'Полное расписание' },
+            ]}
+            defaultValue="allWeekTypes"
+            onChange={setSelectedWeekType}
+          />
         </Form.Item>
         <Tooltip title="Функция будет доступна в следующих версиях">
           <div className="rowStyle">

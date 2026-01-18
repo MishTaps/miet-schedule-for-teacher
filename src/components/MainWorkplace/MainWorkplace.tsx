@@ -28,6 +28,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [allLessons, setAllLessons] = useState<ScheduleDataItem[]>([])
   const [teachers, setTeachers] = useState<string[]>([])
   const [selectedTeacher, setSelectedTeacher] = useState<string | null>(null)
+  const [selectedWeekType, setSelectedWeekType] = useState<string>('allWeekTypes')
 
   const [rawTableData, setRawTableData] = useState<ScheduleRecord[]>(dataSource)
   const [hideEmptyDaysTypes, setHideEmptyDaysTypes] = useState(false)
@@ -183,12 +184,17 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
               setHideEmptyDaysTypes={setHideEmptyDaysTypes}
               hideEmptyRows={hideEmptyRows}
               setHideEmptyRows={setHideEmptyRows}
+              setSelectedWeekType={setSelectedWeekType}
             />
           </div>
         )}
 
         {selectedTeacher && (
-          <ScheduleTable hideEmptyRows={hideEmptyRows} rawTableData={rawTableData} />
+          <ScheduleTable
+            hideEmptyRows={hideEmptyRows}
+            rawTableData={rawTableData}
+            selectedWeekType={selectedWeekType}
+          />
         )}
       </main>
     </Spin>
