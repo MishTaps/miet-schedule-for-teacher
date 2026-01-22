@@ -1,6 +1,7 @@
 import { Divider, Empty, Form, Select, Switch } from 'antd'
 import './MainForm.css'
 import { useMemo } from 'react'
+import { UserOutlined } from '@ant-design/icons'
 interface MainForm {
   teachers: string[]
   setSelectedTeacher: (value: string | null) => void
@@ -36,6 +37,7 @@ export const MainForm: React.FC<MainForm> = ({
             placeholder="Иванов Иван Иванович"
             options={teacherOptions}
             onChange={setSelectedTeacher}
+            prefix={<UserOutlined />}
             notFoundContent={
               <Empty
                 description="Преподаватели не найдены"
