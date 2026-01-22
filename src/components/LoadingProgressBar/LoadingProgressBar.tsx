@@ -2,11 +2,13 @@ import { Progress } from 'antd'
 interface LoadingProgressBar {
   groupScannedPercent: number
   isOpenedOnFreeServer: boolean
+  scanningGroupsSchedule: boolean
 }
 
 export const LoadingProgressBar: React.FC<LoadingProgressBar> = ({
   groupScannedPercent,
   isOpenedOnFreeServer,
+  scanningGroupsSchedule,
 }) => {
   return (
     <>
@@ -20,7 +22,7 @@ export const LoadingProgressBar: React.FC<LoadingProgressBar> = ({
         )}
         <Progress
           percent={groupScannedPercent}
-          status="active"
+          status={scanningGroupsSchedule ? 'active' : 'exception'}
           percentPosition={{ align: 'center' }}
           style={{ padding: '5px 0' }}
         />

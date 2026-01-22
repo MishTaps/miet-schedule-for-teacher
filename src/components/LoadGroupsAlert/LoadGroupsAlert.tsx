@@ -26,7 +26,7 @@ export const LoadGroupsAlert: React.FC<LoadGroupsAlert> = ({
 
   return (
     <Alert
-      title={`Не удалось загрузить расписание ${errorScannedGroups.length} ${errorTextEnding}`}
+      title={`Не удалось загрузить расписание ${errorScannedGroups.length} ${errorTextEnding}. Расписание преподавателя может быть неполное`}
       banner
       action={
         <Button

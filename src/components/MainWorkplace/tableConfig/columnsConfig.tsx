@@ -41,7 +41,7 @@ const getWeekTypeColumns = (dayKey: string) => [
 export const columnsConfig: (TableColumnType<ScheduleRecord> | ColumnGroupType<ScheduleRecord>)[] =
   [
     {
-      title: 'Пара',
+      title: 'Пары',
       dataIndex: 'lesson',
       key: 'lesson',
       width: 120,

@@ -5,11 +5,13 @@ import { UserOutlined } from '@ant-design/icons'
 interface MainForm {
   teachers: string[]
   setSelectedTeacher: (value: string | null) => void
-  hideEmptyDaysTypes: boolean
-  setHideEmptyDaysTypes: (value: boolean) => void
-  hideEmptyRows: boolean
-  setHideEmptyRows: (value: boolean) => void
   setSelectedWeekType: (value: string) => void
+  hideEmptyDaysTypes: boolean
+  hideEmptyRows: boolean
+  hideTimeColumn: boolean
+  setHideEmptyDaysTypes: (value: boolean) => void
+  setHideEmptyRows: (value: boolean) => void
+  setHideTimeColumn: (value: boolean) => void
 }
 
 export const MainForm: React.FC<MainForm> = ({
@@ -20,6 +22,8 @@ export const MainForm: React.FC<MainForm> = ({
   hideEmptyRows,
   setHideEmptyRows,
   setSelectedWeekType,
+  hideTimeColumn,
+  setHideTimeColumn,
 }) => {
   const teacherOptions = useMemo(() => teachers.map((t) => ({ label: t, value: t })), [teachers])
 
@@ -36,7 +40,10 @@ export const MainForm: React.FC<MainForm> = ({
             getPopupContainer={(trigger) => trigger.parentElement}
             placeholder="Иванов Иван Иванович"
             options={teacherOptions}
-            onChange={setSelectedTeacher}
+            onSelect={(value) => {
+              setSelectedTeacher(value)
+              ;(document.activeElement as HTMLElement)?.blur()
+            }}
             prefix={<UserOutlined />}
             notFoundContent={
               <Empty
@@ -66,6 +73,10 @@ export const MainForm: React.FC<MainForm> = ({
         <div className="rowStyle">
           <span>Скрыть пары без занятий</span>
           <Switch checked={hideEmptyRows} onChange={setHideEmptyRows} />
+        </div>
+        <div className="rowStyle">
+          <span>Скрыть столбец «Пары»</span>
+          <Switch checked={hideTimeColumn} onChange={setHideTimeColumn} />
         </div>
       </Form>
     </div>

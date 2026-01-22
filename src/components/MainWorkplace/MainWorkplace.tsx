@@ -1,4 +1,4 @@
-import { Spin } from 'antd'
+import { message, Spin } from 'antd'
 import { useEffect, useState } from 'react'
 
 import './MainWorkplace.css'
@@ -39,6 +39,10 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [tableData, setTableData] = useState<ScheduleRecord[]>(defaultTableData)
   const [hideEmptyDaysTypes, setHideEmptyDaysTypes] = useState(false)
   const [hideEmptyRows, setHideEmptyRows] = useState(false)
+  const [hideTimeColumn, setHideTimeColumn] = useState(false)
+
+  const [timeCodes, setTimeCodes] = useState<number[]>([])
+  const [timeRanges, setTimeRanges] = useState<string[]>([])
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -64,8 +68,8 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
     }
 
     const BATCH_SIZE = 10
-    const lessons: ScheduleDataItem[] = []
-    const teachersSet = new Set<string>()
+    const lessons = allLessons
+    const teachersSet = new Set(teachers)
 
     for (let i = 0; i < groupsToLoad.length; i += BATCH_SIZE) {
       const batch = groupsToLoad.slice(i, i + BATCH_SIZE)
@@ -89,8 +93,14 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             if (errorScannedGroups.includes(group)) {
               setErrorScannedGroups((prev) => prev.filter((item) => item !== group))
             }
+            if (i == 0) {
+              res.Times.forEach((time) => {
+                setTimeCodes((prev) => [...prev, time.Code])
+                setTimeRanges((prev) => [...prev, `${time.TimeFrom} - ${time.TimeTo}`])
+              })
+            }
           } catch {
-            console.error(`Ошибка загрузки группы ${group}`)
+            message.error(`Ошибка загрузки группы: ${group}`)
             setErrorScannedGroups((prev) => [...prev, group])
           }
         }),
@@ -131,7 +141,13 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
           let mergedInfo = ''
           const existingInfo = currentDay[weekKey]
           if (existingInfo) {
-            const blocks = existingInfo.split('\n---\n')
+            const existingInfoWithoutTime = existingInfo.startsWith(
+              `${timeCodes[lesson.Time.Code - 1]} пара`,
+            )
+              ? existingInfo.split('\n').slice(2).join('\n')
+              : existingInfo
+
+            const blocks = existingInfoWithoutTime.split('\n---\n')
             let isFoundMatch = false
 
             const updatedBlocks = blocks.map((block) => {
@@ -163,6 +179,23 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             mergedInfo = `${newGroup}\n${newClass}\n${newRoom}`
           }
 
+          if (hideTimeColumn && !mergedInfo.startsWith(`${timeCodes[lesson.Time.Code - 1]} пара`)) {
+            const timeName = `${timeCodes[lesson.Time.Code - 1]} пара`
+            const timeRange = timeRanges[lesson.Time.Code - 1]
+
+            const mergedTimeRange = timeRange
+              .split(' - ')
+              .map((str) => {
+                const date = new Date(str)
+                return date.toLocaleTimeString('ru-RU', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })
+              })
+              .join(' - ')
+            mergedInfo = `${timeName}\n${mergedTimeRange}\n${mergedInfo}`
+          }
+
           updatedData[timeIndex] = {
             ...currentRow,
             [dayKey]: {
@@ -171,14 +204,13 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             },
           }
         })
-
       setTableData(updatedData)
     }
 
     if (selectedTeacher) {
       buildScheduleForTeacher(selectedTeacher)
     }
-  }, [allLessons, selectedTeacher])
+  }, [allLessons, hideTimeColumn, selectedTeacher, timeCodes, timeRanges])
 
   return (
     <Spin spinning={loadingGroups} tip="Получение списка групп...">
@@ -191,7 +223,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
           />
         )}
 
-        {!finishedFirstGroupsLoading && (
+        {!finishedFirstGroupsLoading && !isGroupsLoadedWithError && (
           <div>
             <GroupFound
               groups={groups}
@@ -205,10 +237,11 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
           <ServerErrorAlert isOpenedOnFreeServer={isOpenedOnFreeServer} />
         )}
 
-        {scanningGroupsSchedule && groupScannedPercent < 100 && (
+        {(scanningGroupsSchedule || finishedFirstGroupsLoading) && groupScannedPercent < 100 && (
           <LoadingProgressBar
             groupScannedPercent={groupScannedPercent}
             isOpenedOnFreeServer={isOpenedOnFreeServer}
+            scanningGroupsSchedule={scanningGroupsSchedule}
           />
         )}
 
@@ -217,11 +250,13 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             <MainForm
               teachers={teachers}
               setSelectedTeacher={setSelectedTeacher}
-              hideEmptyDaysTypes={hideEmptyDaysTypes}
-              setHideEmptyDaysTypes={setHideEmptyDaysTypes}
-              hideEmptyRows={hideEmptyRows}
-              setHideEmptyRows={setHideEmptyRows}
               setSelectedWeekType={setSelectedWeekType}
+              hideEmptyDaysTypes={hideEmptyDaysTypes}
+              hideEmptyRows={hideEmptyRows}
+              hideTimeColumn={hideTimeColumn}
+              setHideEmptyRows={setHideEmptyRows}
+              setHideEmptyDaysTypes={setHideEmptyDaysTypes}
+              setHideTimeColumn={setHideTimeColumn}
             />
           </div>
         )}
@@ -232,6 +267,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             tableData={tableData}
             selectedWeekType={selectedWeekType}
             hideEmptyDaysTypes={hideEmptyDaysTypes}
+            hideTimeColumn={hideTimeColumn}
           />
         )}
       </main>

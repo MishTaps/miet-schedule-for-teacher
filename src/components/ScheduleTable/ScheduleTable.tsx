@@ -9,6 +9,7 @@ interface ScheduleTable {
   tableData: ScheduleRecord[]
   selectedWeekType: string
   hideEmptyDaysTypes: boolean
+  hideTimeColumn: boolean
 }
 
 export const ScheduleTable: React.FC<ScheduleTable> = ({
@@ -16,6 +17,7 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({
   tableData,
   selectedWeekType,
   hideEmptyDaysTypes,
+  hideTimeColumn,
 }) => {
   const visibleColumns = useMemo(() => {
     const isWeekTypeColumnEmpty = (dayKey: string, weekType: string) => {
@@ -28,6 +30,7 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({
 
     return columnsConfig
       .map((column) => {
+        if (hideTimeColumn && column.key == 'lesson') return null
         if (!('children' in column)) return column
 
         const childDataIndex = (column.children?.[0] as ColumnType<ScheduleRecord> | undefined)
@@ -64,7 +67,7 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({
           | ColumnType<ScheduleRecord>
           | Exclude<(typeof columnsConfig)[0], { children?: unknown }> => column !== null,
       )
-  }, [tableData, selectedWeekType, hideEmptyDaysTypes])
+  }, [tableData, hideTimeColumn, selectedWeekType, hideEmptyDaysTypes])
 
   const visibleTableData = useMemo(() => {
     const isRowEmpty = (row: ScheduleRecord) => {
