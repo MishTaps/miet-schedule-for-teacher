@@ -1,7 +1,7 @@
 import type { TableColumnType } from 'antd'
-import './MainWorkplace.css'
+import '../MainWorkplace.css'
 import type { ColumnGroupType } from 'antd/es/table'
-import type { ScheduleRecord } from '../../types'
+import type { ScheduleRecord } from '@/types'
 
 const getWeekTypeColumns = (dayKey: string) => [
   {

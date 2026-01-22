@@ -1,4 +1,4 @@
-import type { ScheduleResponse } from '../../../types'
+import type { ScheduleResponse } from '@/types'
 import api from '../api'
 
 export const GroupsService = {

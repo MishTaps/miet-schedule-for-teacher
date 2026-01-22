@@ -1,4 +1,4 @@
-export const dataSource = [
+export const defaultTableData = [
   {
     key: '1',
     lesson: '1 пара\n09:00 - 10:20',

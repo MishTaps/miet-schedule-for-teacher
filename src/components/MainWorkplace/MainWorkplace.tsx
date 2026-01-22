@@ -5,12 +5,12 @@ import { SearchOutlined } from '@ant-design/icons'
 
 import './MainWorkplace.css'
 
-import { dataSource } from './dataSource'
+import { defaultTableData } from './tableConfig/defaultTableData'
 
 import { messages } from './messages'
-import type { ScheduleDataItem, ScheduleRecord, WeekTypes } from '../../types'
-import { GroupFound, LoadingProgressBar, MainForm, ScheduleTable } from '..'
-import { GroupsService } from '../../data'
+import { GroupFound, LoadingProgressBar, MainForm, ScheduleTable } from '@/components'
+import { GroupsService } from '@/data'
+import type { ScheduleDataItem, ScheduleRecord, WeekTypes } from '@/types'
 
 interface MainWorkplaceProps {
   isOpenedOnFreeServer: boolean
@@ -29,7 +29,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [selectedTeacher, setSelectedTeacher] = useState<string | null>(null)
   const [selectedWeekType, setSelectedWeekType] = useState<string>('allWeekTypes')
 
-  const [rawTableData, setRawTableData] = useState<ScheduleRecord[]>(dataSource)
+  const [tableData, setTableData] = useState<ScheduleRecord[]>(defaultTableData)
   const [hideEmptyDaysTypes, setHideEmptyDaysTypes] = useState(false)
   const [hideEmptyRows, setHideEmptyRows] = useState(false)
 
@@ -90,7 +90,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
 
   useEffect(() => {
     const buildScheduleForTeacher = (teacher: string) => {
-      const updatedData: ScheduleRecord[] = structuredClone(dataSource)
+      const updatedData: ScheduleRecord[] = structuredClone(defaultTableData)
 
       allLessons
         .filter((l) => l.Class?.TeacherFull === teacher)
@@ -157,7 +157,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
           }
         })
 
-      setRawTableData(updatedData)
+      setTableData(updatedData)
     }
 
     if (selectedTeacher) {
@@ -229,7 +229,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
         {selectedTeacher && (
           <ScheduleTable
             hideEmptyRows={hideEmptyRows}
-            rawTableData={rawTableData}
+            tableData={tableData}
             selectedWeekType={selectedWeekType}
             hideEmptyDaysTypes={hideEmptyDaysTypes}
           />
