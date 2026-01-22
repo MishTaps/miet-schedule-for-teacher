@@ -116,35 +116,34 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
           let mergedInfo = ''
           const existingInfo = currentDay[weekKey]
           if (existingInfo) {
-            const oldData = existingInfo.split('\n')
-            const oldGroups = oldData[0]
-            const oldClasses = oldData[1]
-            const oldRooms = oldData[2]
-            const newGroupsArray = oldGroups.split(',').map((g) => g.trim())
-            const newClassesArray = oldClasses.split(',').map((g) => g.trim())
-            const newRoomsArray = oldRooms.split(',').map((g) => g.trim())
+            const blocks = existingInfo.split('\n---\n')
+            let isFoundMatch = false
 
-            let mergedGroups = oldGroups
-            let mergedClasses = oldClasses
-            let mergedRooms = oldRooms
+            const updatedBlocks = blocks.map((block) => {
+              const lines = block.split('\n')
+              const blockGroups = lines[0]
+              const blockClass = lines[1]
+              const blockRoom = lines[2]
 
-            if (!newGroupsArray.includes(newGroup)) {
-              newGroupsArray.push(newGroup)
-              const sortedGroups = newGroupsArray.sort()
-              mergedGroups = sortedGroups.join(', ')
-            }
-            if (!newClassesArray.includes(newClass)) {
-              newClassesArray.push(newClass)
-              const sortedClasses = newClassesArray.sort()
-              mergedClasses = sortedClasses.join(' / ')
-            }
-            if (!newRoomsArray.includes(newRoom)) {
-              newRoomsArray.push(newRoom)
-              const sortedRooms = newRoomsArray.sort()
-              mergedRooms = sortedRooms.join(', ')
+              if (blockClass === newClass && blockRoom === newRoom) {
+                isFoundMatch = true
+                const groupsArray = blockGroups.split(',').map((g) => g.trim())
+
+                if (!groupsArray.includes(newGroup)) {
+                  groupsArray.push(newGroup)
+                  groupsArray.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+                }
+
+                return `${groupsArray.join(', ')}\n${blockClass}\n${blockRoom}`
+              }
+              return block
+            })
+
+            if (!isFoundMatch) {
+              updatedBlocks.push(`${newGroup}\n${newClass}\n${newRoom}`)
             }
 
-            mergedInfo = `${mergedGroups}\n${mergedClasses}\n${mergedRooms}`
+            mergedInfo = updatedBlocks.join('\n---\n')
           } else {
             mergedInfo = `${newGroup}\n${newClass}\n${newRoom}`
           }
@@ -165,7 +164,6 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
       buildScheduleForTeacher(selectedTeacher)
     }
   }, [allLessons, selectedTeacher])
-
   return (
     <Spin spinning={loadingGroups} tip="Получение списка групп...">
       <main>
