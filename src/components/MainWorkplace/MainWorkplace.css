@@ -5,7 +5,6 @@
 
 .weekColumn:nth-child(even) {
     background-color: #fafafa;
-    min-width: 100px;
 }
 
 .dayColumn {
