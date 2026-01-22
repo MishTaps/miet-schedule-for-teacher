@@ -109,11 +109,51 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             weekType3: '',
           }
 
+          const newGroup = lesson.Group.Name
+          const newClass = lesson.Class.Name
+          const newRoom = lesson.Room.Name
+
+          let mergedInfo = ''
+          const existingInfo = currentDay[weekKey]
+          if (existingInfo) {
+            const oldData = existingInfo.split('\n')
+            const oldGroups = oldData[0]
+            const oldClasses = oldData[1]
+            const oldRooms = oldData[2]
+            const newGroupsArray = oldGroups.split(',').map((g) => g.trim())
+            const newClassesArray = oldClasses.split(',').map((g) => g.trim())
+            const newRoomsArray = oldRooms.split(',').map((g) => g.trim())
+
+            let mergedGroups = oldGroups
+            let mergedClasses = oldClasses
+            let mergedRooms = oldRooms
+
+            if (!newGroupsArray.includes(newGroup)) {
+              newGroupsArray.push(newGroup)
+              const sortedGroups = newGroupsArray.sort()
+              mergedGroups = sortedGroups.join(', ')
+            }
+            if (!newClassesArray.includes(newClass)) {
+              newClassesArray.push(newClass)
+              const sortedClasses = newClassesArray.sort()
+              mergedClasses = sortedClasses.join(' / ')
+            }
+            if (!newRoomsArray.includes(newRoom)) {
+              newRoomsArray.push(newRoom)
+              const sortedRooms = newRoomsArray.sort()
+              mergedRooms = sortedRooms.join(', ')
+            }
+
+            mergedInfo = `${mergedGroups}\n${mergedClasses}\n${mergedRooms}`
+          } else {
+            mergedInfo = `${newGroup}\n${newClass}\n${newRoom}`
+          }
+
           updatedData[timeIndex] = {
             ...currentRow,
             [dayKey]: {
               ...currentDay,
-              [weekKey]: `${lesson.Group.Name}\n${lesson.Class.Name}\n${lesson.Room.Name}`,
+              [weekKey]: mergedInfo,
             },
           }
         })
