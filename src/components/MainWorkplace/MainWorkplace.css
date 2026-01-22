@@ -1,4 +1,13 @@
-.column {
+.weekColumn {
     text-align: center;
     max-width: 200px;
+}
+
+.column:nth-child(even) {
+    background-color: #fafafa;
+    min-width: 100px;
+}
+
+.dayColumn {
+    border-right: 1px solid #f0f0f0;
 }

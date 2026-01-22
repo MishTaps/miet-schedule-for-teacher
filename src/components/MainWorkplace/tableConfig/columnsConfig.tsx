@@ -10,7 +10,7 @@ const getWeekTypeColumns = (dayKey: string) => [
     key: `${dayKey}weekType0`,
     align: 'center' as const,
     render: (text: string) => <div style={{ whiteSpace: 'pre-line' }}>{text}</div>,
-    className: 'column',
+    className: 'weekColumn',
   },
   {
     title: 'З-I',
@@ -18,7 +18,7 @@ const getWeekTypeColumns = (dayKey: string) => [
     key: `${dayKey}weekType1`,
     align: 'center' as const,
     render: (text: string) => <div style={{ whiteSpace: 'pre-line' }}>{text}</div>,
-    className: 'column',
+    className: 'weekColumn',
   },
   {
     title: 'Ч-II',
@@ -26,7 +26,7 @@ const getWeekTypeColumns = (dayKey: string) => [
     key: `${dayKey}weekType2`,
     align: 'center' as const,
     render: (text: string) => <div style={{ whiteSpace: 'pre-line' }}>{text}</div>,
-    className: 'column',
+    className: 'weekColumn',
   },
   {
     title: 'З-II',
@@ -34,7 +34,7 @@ const getWeekTypeColumns = (dayKey: string) => [
     key: `${dayKey}weekType3`,
     align: 'center' as const,
     render: (text: string) => <div style={{ whiteSpace: 'pre-line' }}>{text}</div>,
-    className: 'column',
+    className: 'weekColumn',
   },
 ]
 
@@ -52,30 +52,36 @@ export const columnsConfig: (TableColumnType<ScheduleRecord> | ColumnGroupType<S
       title: 'Понедельник',
       align: 'center' as const,
       children: getWeekTypeColumns('day1'),
+      className: 'dayColumn',
     },
     {
       title: 'Вторник',
       align: 'center' as const,
       children: getWeekTypeColumns('day2'),
+      className: 'dayColumn',
     },
     {
       title: 'Среда',
       align: 'center' as const,
       children: getWeekTypeColumns('day3'),
+      className: 'dayColumn',
     },
     {
       title: 'Четверг',
       align: 'center' as const,
       children: getWeekTypeColumns('day4'),
+      className: 'dayColumn',
     },
     {
       title: 'Пятница',
       align: 'center' as const,
       children: getWeekTypeColumns('day5'),
+      className: 'dayColumn',
     },
     {
       title: 'Суббота',
       align: 'center' as const,
       children: getWeekTypeColumns('day6'),
+      className: 'dayColumn',
     },
   ]
