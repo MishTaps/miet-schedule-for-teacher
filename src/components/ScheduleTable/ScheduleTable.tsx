@@ -1,7 +1,8 @@
 import { Divider, Table } from 'antd'
-import { columnsConfig, type ScheduleRecord, type WeekTypes } from '../MainWorkplace/columnsConfig'
 import { useMemo } from 'react'
 import type { ColumnType } from 'antd/es/table'
+import type { ScheduleRecord, WeekTypes } from '../../types'
+import { columnsConfig } from '../MainWorkplace/columnsConfig'
 
 interface ScheduleTable {
   hideEmptyRows: boolean

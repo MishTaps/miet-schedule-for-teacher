@@ -1,4 +1,4 @@
-import { Divider, Form, Select, Switch } from 'antd'
+import { Divider, Empty, Form, Select, Switch } from 'antd'
 import './MainForm.css'
 import { useMemo } from 'react'
 interface MainForm {
@@ -36,6 +36,12 @@ export const MainForm: React.FC<MainForm> = ({
             placeholder="Иванов Иван Иванович"
             options={teacherOptions}
             onChange={setSelectedTeacher}
+            notFoundContent={
+              <Empty
+                description="Преподаватели не найдены"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              ></Empty>
+            }
           />
         </Form.Item>
         <Form.Item label="Выберите тип недели:" name="weekType" initialValue="allWeekTypes">

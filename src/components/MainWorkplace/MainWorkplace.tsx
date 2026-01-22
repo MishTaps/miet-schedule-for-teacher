@@ -6,10 +6,9 @@ import { SearchOutlined } from '@ant-design/icons'
 import './MainWorkplace.css'
 
 import { dataSource } from './dataSource'
-import { type ScheduleRecord, type WeekTypes } from './columnsConfig'
 
 import { messages } from './messages'
-import type { ScheduleDataItem } from '../../types'
+import type { ScheduleDataItem, ScheduleRecord, WeekTypes } from '../../types'
 import { GroupFound, LoadingProgressBar, MainForm, ScheduleTable } from '..'
 import { GroupsService } from '../../data'
 
