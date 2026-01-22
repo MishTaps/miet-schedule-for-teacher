@@ -3,7 +3,7 @@
     max-width: 200px;
 }
 
-.column:nth-child(even) {
+.weekColumn:nth-child(even) {
     background-color: #fafafa;
     min-width: 100px;
 }
