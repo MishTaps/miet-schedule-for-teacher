@@ -1,14 +1,18 @@
-import { Button, Result, Spin, Divider } from 'antd'
+import { Spin } from 'antd'
 import { useEffect, useState } from 'react'
-import { ExportOutlined } from '@ant-design/icons'
-import { SearchOutlined } from '@ant-design/icons'
 
 import './MainWorkplace.css'
 
 import { defaultTableData } from './tableConfig/defaultTableData'
 
-import { messages } from './messages'
-import { GroupFound, LoadingProgressBar, MainForm, ScheduleTable } from '@/components'
+import {
+  GroupFound,
+  LoadGroupsAlert,
+  LoadingProgressBar,
+  MainForm,
+  ScheduleTable,
+  ServerErrorAlert,
+} from '@/components'
 import { GroupsService } from '@/data'
 import type { ScheduleDataItem, ScheduleRecord, WeekTypes } from '@/types'
 
@@ -19,10 +23,13 @@ interface MainWorkplaceProps {
 export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServer }) => {
   const [groups, setGroups] = useState<string[]>([])
   const [loadingGroups, setLoadingGroups] = useState(true)
+  const [finishedFirstGroupsLoading, setFinishedFirstGroupsLoading] = useState(false)
   const [isGroupsLoadedWithError, setIsGroupsLoadedWithError] = useState(false)
+  const [scanningGroupsSchedule, setScanningAGroupsSchedule] = useState(false)
 
-  const [groupsScanned, setGroupsScanned] = useState(0)
-  const groupScannedPercent = Math.round((groupsScanned / (groups.length || 1)) * 100)
+  const [scannedGroups, setScannedGroups] = useState(0)
+  const groupScannedPercent = Math.round((scannedGroups / (groups.length || 1)) * 100)
+  const [errorScannedGroups, setErrorScannedGroups] = useState<string[]>([])
 
   const [allLessons, setAllLessons] = useState<ScheduleDataItem[]>([])
   const [teachers, setTeachers] = useState<string[]>([])
@@ -32,8 +39,6 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [tableData, setTableData] = useState<ScheduleRecord[]>(defaultTableData)
   const [hideEmptyDaysTypes, setHideEmptyDaysTypes] = useState(false)
   const [hideEmptyRows, setHideEmptyRows] = useState(false)
-
-  const [loadingAllGroupsSchedule, setLoadingAllGroupsSchedule] = useState(false)
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -50,22 +55,26 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
     fetchGroups()
   }, [])
 
-  const loadAllSchedules = async () => {
-    setLoadingAllGroupsSchedule(true)
-    setGroupsScanned(0)
+  const loadAllSchedules = async (groupsToLoad = groups) => {
+    setScanningAGroupsSchedule(true)
+    if (errorScannedGroups.length == 0) {
+      setScannedGroups(0)
+    } else {
+      setScannedGroups(groups.length - errorScannedGroups.length)
+    }
 
     const BATCH_SIZE = 10
     const lessons: ScheduleDataItem[] = []
     const teachersSet = new Set<string>()
 
-    for (let i = 0; i < groups.length; i += BATCH_SIZE) {
-      const batch = groups.slice(i, i + BATCH_SIZE)
+    for (let i = 0; i < groupsToLoad.length; i += BATCH_SIZE) {
+      const batch = groupsToLoad.slice(i, i + BATCH_SIZE)
 
       await Promise.all(
         batch.map(async (group) => {
           try {
             const res = await GroupsService.getScheduleForGroup(group)
-            setGroupsScanned((p) => p + 1)
+            setScannedGroups((p) => p + 1)
 
             if (!res?.Data) return
 
@@ -76,8 +85,13 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
                 teachersSet.add(lesson.Class.TeacherFull)
               }
             })
+
+            if (errorScannedGroups.includes(group)) {
+              setErrorScannedGroups((prev) => prev.filter((item) => item !== group))
+            }
           } catch {
             console.error(`Ошибка загрузки группы ${group}`)
+            setErrorScannedGroups((prev) => [...prev, group])
           }
         }),
       )
@@ -85,7 +99,8 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
 
     setAllLessons(lessons)
     setTeachers(Array.from(teachersSet).sort())
-    setLoadingAllGroupsSchedule(false)
+    setScanningAGroupsSchedule(false)
+    setFinishedFirstGroupsLoading(true)
   }
 
   useEffect(() => {
@@ -164,55 +179,40 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
       buildScheduleForTeacher(selectedTeacher)
     }
   }, [allLessons, selectedTeacher])
+
   return (
     <Spin spinning={loadingGroups} tip="Получение списка групп...">
       <main>
-        {groupScannedPercent != 100 && (
+        {errorScannedGroups.length > 0 && finishedFirstGroupsLoading && (
+          <LoadGroupsAlert
+            errorScannedGroups={errorScannedGroups}
+            scanningGroupsSchedule={scanningGroupsSchedule}
+            loadAllSchedules={loadAllSchedules}
+          />
+        )}
+
+        {!finishedFirstGroupsLoading && (
           <div>
-            <GroupFound groups={groups} />
-            <Divider>Получение данных</Divider>
-            <div style={{ padding: '0 30px', margin: '0 auto', maxWidth: '400px' }}>
-              <Button
-                type="primary"
-                block
-                loading={loadingAllGroupsSchedule}
-                onClick={loadAllSchedules}
-                icon={<SearchOutlined />}
-                style={{ width: '100%' }}
-              >
-                Получить данные о расписании групп
-              </Button>
-            </div>
+            <GroupFound
+              groups={groups}
+              scanningGroupsSchedule={scanningGroupsSchedule}
+              loadAllSchedules={loadAllSchedules}
+            />
           </div>
         )}
 
         {isGroupsLoadedWithError && (
-          <Result
-            status="500"
-            title="Ошибка сервера"
-            subTitle={isOpenedOnFreeServer ? messages.onlineServer : messages.localServer}
-            extra={
-              isOpenedOnFreeServer ? (
-                <Button
-                  type="primary"
-                  href="https://github.com/MishTaps/miet-schedule-for-teacher/tree/main?tab=readme-ov-file#%D0%B7%D0%B0%D0%BF%D1%83%D1%81%D0%BA-%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D1%8B-%D0%BB%D0%BE%D0%BA%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE"
-                  target="_blank"
-                >
-                  Узнать, как развернуть локально <ExportOutlined />
-                </Button>
-              ) : null
-            }
-          />
+          <ServerErrorAlert isOpenedOnFreeServer={isOpenedOnFreeServer} />
         )}
 
-        {loadingAllGroupsSchedule && groupScannedPercent < 100 && (
+        {scanningGroupsSchedule && groupScannedPercent < 100 && (
           <LoadingProgressBar
             groupScannedPercent={groupScannedPercent}
             isOpenedOnFreeServer={isOpenedOnFreeServer}
           />
         )}
 
-        {teachers.length > 0 && (
+        {finishedFirstGroupsLoading && (
           <div>
             <MainForm
               teachers={teachers}
