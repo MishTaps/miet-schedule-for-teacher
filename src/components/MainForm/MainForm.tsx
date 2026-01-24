@@ -80,7 +80,7 @@ export const MainForm: React.FC<MainForm> = ({
           <Tooltip
             title={
               selectedWeekType !== 'allWeekTypes' &&
-              'Сортировка доступна только в режиме «Полное расписание»'
+              'Сортировка доступна только при выбранном типе недели «Полное расписание»'
             }
           >
             <div>
