@@ -1,7 +1,7 @@
 import { Divider, Table } from 'antd'
 import { useMemo } from 'react'
 import type { ColumnType } from 'antd/es/table'
-import { columnsConfig } from '../MainWorkplace/tableConfig/columnsConfig'
+import { columnsConfigDays, columnsConfigWeeks } from '../MainWorkplace/tableConfig/columnsConfig'
 import type { ScheduleRecord, WeekTypes } from '@/types'
 
 interface ScheduleTable {
@@ -10,6 +10,7 @@ interface ScheduleTable {
   selectedWeekType: string
   hideEmptyDaysTypes: boolean
   hideTimeColumn: boolean
+  sortColumnType: string
 }
 
 export const ScheduleTable: React.FC<ScheduleTable> = ({
@@ -18,7 +19,10 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({
   selectedWeekType,
   hideEmptyDaysTypes,
   hideTimeColumn,
+  sortColumnType,
 }) => {
+  const columnsConfig = sortColumnType == 'day' ? columnsConfigDays : columnsConfigWeeks
+
   const visibleColumns = useMemo(() => {
     const isWeekTypeColumnEmpty = (dayKey: string, weekType: string) => {
       return tableData.every((row) => {
@@ -47,8 +51,8 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({
           .filter((child) => {
             if (!hideEmptyDaysTypes) return true
             if (!('dataIndex' in child)) return false
-            const [, weekType] = child.dataIndex as string[]
-            return !isWeekTypeColumnEmpty(dayKey, weekType)
+            const [childDayKey, weekType] = child.dataIndex as string[]
+            return !isWeekTypeColumnEmpty(childDayKey, weekType)
           })
 
         if (children.length === 0) {
@@ -67,7 +71,7 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({
           | ColumnType<ScheduleRecord>
           | Exclude<(typeof columnsConfig)[0], { children?: unknown }> => column !== null,
       )
-  }, [tableData, hideTimeColumn, selectedWeekType, hideEmptyDaysTypes])
+  }, [columnsConfig, tableData, hideTimeColumn, selectedWeekType, hideEmptyDaysTypes])
 
   const visibleTableData = useMemo(() => {
     const isRowEmpty = (row: ScheduleRecord) => {

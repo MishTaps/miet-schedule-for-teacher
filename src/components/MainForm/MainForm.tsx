@@ -1,7 +1,8 @@
-import { Divider, Empty, Form, Select, Switch } from 'antd'
+import { Divider, Empty, Form, Radio, Select, Switch, Tooltip } from 'antd'
 import './MainForm.css'
 import { useMemo } from 'react'
 import { UserOutlined } from '@ant-design/icons'
+
 interface MainForm {
   teachers: string[]
   setSelectedTeacher: (value: string | null) => void
@@ -12,6 +13,9 @@ interface MainForm {
   setHideEmptyDaysTypes: (value: boolean) => void
   setHideEmptyRows: (value: boolean) => void
   setHideTimeColumn: (value: boolean) => void
+  setSortColumnType: (value: string) => void
+  selectedWeekType: string
+  sortColumnType: string
 }
 
 export const MainForm: React.FC<MainForm> = ({
@@ -24,6 +28,9 @@ export const MainForm: React.FC<MainForm> = ({
   setSelectedWeekType,
   hideTimeColumn,
   setHideTimeColumn,
+  setSortColumnType,
+  selectedWeekType,
+  sortColumnType,
 }) => {
   const teacherOptions = useMemo(() => teachers.map((t) => ({ label: t, value: t })), [teachers])
 
@@ -63,8 +70,38 @@ export const MainForm: React.FC<MainForm> = ({
               { value: 'allWeekTypes', label: 'Полное расписание' },
             ]}
             defaultValue="allWeekTypes"
-            onChange={setSelectedWeekType}
+            onChange={(value) => {
+              setSelectedWeekType(value)
+              setSortColumnType('day')
+            }}
           />
+        </Form.Item>
+        <Form.Item label="Сортировка по:" name="sortType" initialValue="day">
+          <Tooltip
+            title={
+              selectedWeekType !== 'allWeekTypes' &&
+              'Сортировка доступна только в режиме «Полное расписание»'
+            }
+          >
+            <div>
+              <Radio.Group
+                block
+                disabled={selectedWeekType !== 'allWeekTypes'}
+                options={[
+                  { label: 'Дням недели', value: 'day' },
+                  { label: 'Типам недели', value: 'week' },
+                ]}
+                style={{ whiteSpace: 'normal' }}
+                defaultValue="day"
+                value={sortColumnType}
+                optionType="button"
+                buttonStyle="solid"
+                onChange={(e) => {
+                  setSortColumnType(e.target.value)
+                }}
+              />
+            </div>
+          </Tooltip>
         </Form.Item>
         <div className="rowStyle">
           <span>Скрыть дни, числители, знаменатели без занятий</span>

@@ -37,6 +37,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [selectedWeekType, setSelectedWeekType] = useState<string>('allWeekTypes')
 
   const [tableData, setTableData] = useState<ScheduleRecord[]>(defaultTableData)
+  const [sortColumnType, setSortColumnType] = useState<string>('day')
   const [hideEmptyDaysTypes, setHideEmptyDaysTypes] = useState(false)
   const [hideEmptyRows, setHideEmptyRows] = useState(false)
   const [hideTimeColumn, setHideTimeColumn] = useState(false)
@@ -257,6 +258,9 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
               setHideEmptyRows={setHideEmptyRows}
               setHideEmptyDaysTypes={setHideEmptyDaysTypes}
               setHideTimeColumn={setHideTimeColumn}
+              sortColumnType={sortColumnType}
+              setSortColumnType={setSortColumnType}
+              selectedWeekType={selectedWeekType}
             />
           </div>
         )}
@@ -268,6 +272,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             selectedWeekType={selectedWeekType}
             hideEmptyDaysTypes={hideEmptyDaysTypes}
             hideTimeColumn={hideTimeColumn}
+            sortColumnType={sortColumnType}
           />
         )}
       </main>
