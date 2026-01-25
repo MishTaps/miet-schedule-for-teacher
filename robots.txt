@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://miet-schedule-for-teacher.vercel.app/sitemap.xml
