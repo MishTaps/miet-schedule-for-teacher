@@ -14,10 +14,10 @@ export const GroupFound: React.FC<GroupFound> = ({
 }) => {
   return (
     <div>
+      <Divider>Получение данных</Divider>
       <Typography.Title level={5} style={{ padding: '0 30px', textAlign: 'center' }}>
         Всего найдено групп: {groups.length}
       </Typography.Title>
-      <Divider>Получение данных</Divider>
       <div style={{ padding: '0 30px', margin: '0 auto', maxWidth: '400px' }}>
         <Button
           type="primary"
