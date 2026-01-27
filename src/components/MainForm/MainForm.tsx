@@ -2,20 +2,21 @@ import { Divider, Empty, Form, Radio, Select, Switch, Tooltip } from 'antd'
 import './MainForm.css'
 import { useMemo } from 'react'
 import { UserOutlined } from '@ant-design/icons'
+import type { SelectedWeekType, SortColumnType } from '@/types'
 
 interface MainForm {
   teachers: string[]
   setSelectedTeacher: (value: string | null) => void
-  setSelectedWeekType: (value: string) => void
+  setSelectedWeekType: (value: SelectedWeekType) => void
   hideEmptyDaysTypes: boolean
   hideEmptyRows: boolean
   hideTimeColumn: boolean
   setHideEmptyDaysTypes: (value: boolean) => void
   setHideEmptyRows: (value: boolean) => void
   setHideTimeColumn: (value: boolean) => void
-  setSortColumnType: (value: string) => void
-  selectedWeekType: string
-  sortColumnType: string
+  setSortColumnType: (value: SortColumnType) => void
+  selectedWeekType: SelectedWeekType
+  sortColumnType: SortColumnType
 }
 
 export const MainForm: React.FC<MainForm> = ({
@@ -61,7 +62,7 @@ export const MainForm: React.FC<MainForm> = ({
           />
         </Form.Item>
         <Form.Item label="Выберите тип недели:" name="weekType" initialValue="allWeekTypes">
-          <Select
+          <Select<SelectedWeekType>
             options={[
               { value: 'weekType0', label: 'Числитель I' },
               { value: 'weekType1', label: 'Знаменатель I' },

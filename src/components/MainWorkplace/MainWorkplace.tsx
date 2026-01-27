@@ -14,7 +14,13 @@ import {
   ServerErrorAlert,
 } from '@/components'
 import { GroupsService } from '@/data'
-import type { ScheduleDataItem, ScheduleRecord, WeekTypes } from '@/types'
+import type {
+  ScheduleDataItem,
+  ScheduleRecord,
+  SelectedWeekType,
+  SortColumnType,
+  WeekTypes,
+} from '@/types'
 
 interface MainWorkplaceProps {
   isOpenedOnFreeServer: boolean
@@ -34,10 +40,10 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [allLessons, setAllLessons] = useState<ScheduleDataItem[]>([])
   const [teachers, setTeachers] = useState<string[]>([])
   const [selectedTeacher, setSelectedTeacher] = useState<string | null>(null)
-  const [selectedWeekType, setSelectedWeekType] = useState<string>('allWeekTypes')
+  const [selectedWeekType, setSelectedWeekType] = useState<SelectedWeekType>('allWeekTypes')
 
   const [tableData, setTableData] = useState<ScheduleRecord[]>(defaultTableData)
-  const [sortColumnType, setSortColumnType] = useState<string>('day')
+  const [sortColumnType, setSortColumnType] = useState<SortColumnType>('day')
   const [hideEmptyDaysTypes, setHideEmptyDaysTypes] = useState(false)
   const [hideEmptyRows, setHideEmptyRows] = useState(false)
   const [hideTimeColumn, setHideTimeColumn] = useState(false)
@@ -69,7 +75,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
     }
 
     const BATCH_SIZE = 10
-    const lessons = allLessons
+    const lessons = [...allLessons]
     const teachersSet = new Set(teachers)
 
     for (let i = 0; i < groupsToLoad.length; i += BATCH_SIZE) {
