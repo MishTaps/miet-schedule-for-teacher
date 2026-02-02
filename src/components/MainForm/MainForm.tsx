@@ -61,7 +61,7 @@ export const MainForm: React.FC<MainForm> = ({
             }
           />
         </Form.Item>
-        <Form.Item label="Выберите тип недели:" name="weekType" initialValue="allWeekTypes">
+        <Form.Item label="Выберите тип недели:" name="weekType">
           <Select<SelectedWeekType>
             options={[
               { value: 'weekType0', label: 'Числитель I' },

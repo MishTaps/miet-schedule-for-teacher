@@ -6,6 +6,7 @@ import './MainWorkplace.css'
 import { defaultTableData } from './tableConfig/defaultTableData'
 
 import {
+  ExportSchedule,
   GroupFound,
   LoadGroupsAlert,
   LoadingProgressBar,
@@ -272,14 +273,17 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
         )}
 
         {selectedTeacher && (
-          <ScheduleTable
-            hideEmptyRows={hideEmptyRows}
-            tableData={tableData}
-            selectedWeekType={selectedWeekType}
-            hideEmptyDaysTypes={hideEmptyDaysTypes}
-            hideTimeColumn={hideTimeColumn}
-            sortColumnType={sortColumnType}
-          />
+          <div>
+            <ScheduleTable
+              hideEmptyRows={hideEmptyRows}
+              tableData={tableData}
+              selectedWeekType={selectedWeekType}
+              hideEmptyDaysTypes={hideEmptyDaysTypes}
+              hideTimeColumn={hideTimeColumn}
+              sortColumnType={sortColumnType}
+            />
+            <ExportSchedule selectedTeacher={selectedTeacher} tableData={tableData} />
+          </div>
         )}
       </main>
     </Spin>
