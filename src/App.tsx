@@ -16,7 +16,7 @@ function App() {
       <Content>
         <MainWorkplace isOpenedOnFreeServer={isOpenedOnFreeServer} />
       </Content>
-      <Footer isOpenedOnFreeServer={isOpenedOnFreeServer} />
+      <Footer />
     </Layout>
   )
 }

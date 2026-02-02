@@ -1,29 +1,34 @@
 import './Footer.css'
 import { GithubOutlined } from '@ant-design/icons'
 
-interface Footer {
-  isOpenedOnFreeServer: boolean
-}
-
-export const Footer: React.FC<Footer> = ({ isOpenedOnFreeServer }) => {
+export const Footer = () => {
   return (
     <footer>
       <p>
         Это <u>не официальный</u> сайт администрации университета, а просто небольшой проект для
         студентов и преподавателей для расширения функционала просмотра расписания.
       </p>
-      {isOpenedOnFreeServer ? (
-        <p>
-          Если возникли какие-то проблемы или вопросы (а также для развёртывания более стабильного
-          приложения локально):
-        </p>
-      ) : (
-        <p>Если возникли какие-то проблемы или вопросы:</p>
-      )}
+      <p>Полезные ссылки и обратная связь:</p>
 
-      <div>
-        <GithubOutlined />
-        <a href="https://github.com/MishTaps/miet-schedule-for-teacher"> Ссылка на проект GitHub</a>
+      <div className="footer-links">
+        <div>
+          <a href="https://github.com/MishTaps/miet-schedule-for-teacher" target="_blank">
+            <GithubOutlined style={{ color: 'black', paddingRight: '2px' }} />
+            Проект GitHub
+          </a>
+        </div>
+        <div>
+          <a href="https://t.me/MishTaps" target="_blank" style={{ display: 'inline-flex' }}>
+            <img src="/tg-icon.svg" width="16" height="16"></img>
+            Telegram
+          </a>
+        </div>
+        <div>
+          <a href="https://vk.com/mishtaps" target="_blank" style={{ display: 'inline-flex' }}>
+            <img src="/vk-icon.svg" width="16" height="16"></img>
+            ВКонтакте
+          </a>
+        </div>
       </div>
     </footer>
   )
