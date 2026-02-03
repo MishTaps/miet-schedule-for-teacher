@@ -18,15 +18,13 @@ export const Footer = () => {
           </a>
         </div>
         <div>
-          <a href="https://t.me/MishTaps" target="_blank" style={{ display: 'inline-flex' }}>
+          <a
+            href="https://t.me/mietScheduleTeacherFeedbackBot"
+            target="_blank"
+            style={{ display: 'inline-flex' }}
+          >
             <img src="/tg-icon.svg" width="16" height="16"></img>
             Telegram
-          </a>
-        </div>
-        <div>
-          <a href="https://vk.com/mishtaps" target="_blank" style={{ display: 'inline-flex' }}>
-            <img src="/vk-icon.svg" width="16" height="16"></img>
-            ВКонтакте
           </a>
         </div>
       </div>
