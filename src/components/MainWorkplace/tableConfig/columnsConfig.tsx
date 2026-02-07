@@ -5,7 +5,7 @@ import type { ScheduleRecord } from '@/types'
 
 const getWeekTypeColumns = (dayKey: string) => [
   {
-    title: 'Ч-I',
+    title: 'Числ-I',
     dataIndex: [dayKey, 'weekType0'],
     key: `${dayKey}weekType0`,
     align: 'center' as const,
@@ -13,7 +13,7 @@ const getWeekTypeColumns = (dayKey: string) => [
     className: 'weekColumn',
   },
   {
-    title: 'З-I',
+    title: 'Знам-I',
     dataIndex: [dayKey, 'weekType1'],
     key: `${dayKey}weekType1`,
     align: 'center' as const,
@@ -21,7 +21,7 @@ const getWeekTypeColumns = (dayKey: string) => [
     className: 'weekColumn',
   },
   {
-    title: 'Ч-II',
+    title: 'Числ-II',
     dataIndex: [dayKey, 'weekType2'],
     key: `${dayKey}weekType2`,
     align: 'center' as const,
@@ -29,7 +29,7 @@ const getWeekTypeColumns = (dayKey: string) => [
     className: 'weekColumn',
   },
   {
-    title: 'З-II',
+    title: 'Знам-II',
     dataIndex: [dayKey, 'weekType3'],
     key: `${dayKey}weekType3`,
     align: 'center' as const,

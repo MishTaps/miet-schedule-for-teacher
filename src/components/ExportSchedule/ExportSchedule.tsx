@@ -53,7 +53,7 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
       description: (
         <div>
           <p>
-            Вы можете импортировать расписание в любой календарь: Google Календарь, Яндекс
+            Вы можете экспортировать расписание в любой календарь: Google Календарь, Яндекс
             Календарь, Outlook и другие.
           </p>
           <p>После импорта занятия появятся в вашем календаре.</p>
@@ -71,7 +71,7 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
           </p>
           <p>
             <b>Внимание!</b>
-            <br></br>Начальная неделя импорта будет определяться как <b>Числитель I</b>.
+            <br></br>Начальная неделя экспорта будет определяться как <b>Числитель I</b>.
           </p>
         </div>
       ),
@@ -319,14 +319,14 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
 
   return (
     <div ref={ref0}>
-      <Divider>Импорт расписания в ваш календарь</Divider>
+      <Divider>Экспорт расписания в ваш календарь</Divider>
       <Form layout="vertical" style={{ maxWidth: '500px', margin: '0 auto', padding: '0 20px' }}>
         <Button block style={{ margin: '0 0 20px' }} onClick={() => setOpen(true)}>
-          Как пользоваться импортом?
+          Как пользоваться экспортом?
         </Button>
         <div ref={ref1} style={{ display: 'flex ', justifyContent: 'space-between ' }}>
           <ConfigProvider locale={ruRU}>
-            <Form.Item label="Начальная неделя импорта:">
+            <Form.Item label="Начальная неделя экспорта:">
               <DatePicker
                 format={(value) =>
                   `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
@@ -337,7 +337,7 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
                 disabledDate={disableStartAfterEnd}
               ></DatePicker>
             </Form.Item>
-            <Form.Item label="Конечная неделя импорта:">
+            <Form.Item label="Конечная неделя экспорта:">
               <DatePicker
                 format={(value) =>
                   `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
@@ -354,7 +354,7 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
         {canDownload && (
           <Card
             size="small"
-            title="Информация об импортируемых неделях"
+            title="Информация об экспортируемых неделях"
             style={{
               width: '100%',
               height: '250px',
