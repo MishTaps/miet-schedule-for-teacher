@@ -28,6 +28,9 @@ interface MainWorkplaceProps {
 }
 
 export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServer }) => {
+  const params = new URLSearchParams(window.location.search)
+  const paramTeacher = params.get('teacher')
+
   const [groups, setGroups] = useState<string[]>([])
   const [loadingGroups, setLoadingGroups] = useState(true)
   const [finishedFirstGroupsLoading, setFinishedFirstGroupsLoading] = useState(false)
@@ -40,7 +43,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
 
   const [allLessons, setAllLessons] = useState<ScheduleDataItem[]>([])
   const [teachers, setTeachers] = useState<string[]>([])
-  const [selectedTeacher, setSelectedTeacher] = useState<string | null>(null)
+  const [selectedTeacher, setSelectedTeacher] = useState<string | null>(paramTeacher ?? null)
   const [selectedWeekType, setSelectedWeekType] = useState<SelectedWeekType>('allWeekTypes')
 
   const [tableData, setTableData] = useState<ScheduleRecord[]>(defaultTableData)
@@ -268,11 +271,12 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
               sortColumnType={sortColumnType}
               setSortColumnType={setSortColumnType}
               selectedWeekType={selectedWeekType}
+              selectedTeacher={selectedTeacher}
             />
           </div>
         )}
 
-        {selectedTeacher && (
+        {finishedFirstGroupsLoading && selectedTeacher && (
           <div>
             <ScheduleTable
               hideEmptyRows={hideEmptyRows}

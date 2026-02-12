@@ -17,6 +17,7 @@ interface MainForm {
   setSortColumnType: (value: SortColumnType) => void
   selectedWeekType: SelectedWeekType
   sortColumnType: SortColumnType
+  selectedTeacher: string | null
 }
 
 export const MainForm: React.FC<MainForm> = ({
@@ -32,8 +33,15 @@ export const MainForm: React.FC<MainForm> = ({
   setSortColumnType,
   selectedWeekType,
   sortColumnType,
+  selectedTeacher,
 }) => {
   const teacherOptions = useMemo(() => teachers.map((t) => ({ label: t, value: t })), [teachers])
+
+  const url = new URL(window.location.href)
+  if (selectedTeacher) {
+    url.searchParams.set('teacher', selectedTeacher)
+    window.history.replaceState({}, '', url)
+  }
 
   return (
     <div>
@@ -53,6 +61,7 @@ export const MainForm: React.FC<MainForm> = ({
               ;(document.activeElement as HTMLElement)?.blur()
             }}
             prefix={<UserOutlined />}
+            value={selectedTeacher}
             notFoundContent={
               <Empty
                 description="Преподаватели не найдены"
