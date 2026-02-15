@@ -14,7 +14,7 @@ export const GroupFound: React.FC<GroupFound> = ({
 }) => {
   return (
     <div>
-      <Divider>Получение данных</Divider>
+      <Divider>Получение данных с сервера</Divider>
       <Typography.Title level={5} style={{ padding: '0 30px', textAlign: 'center' }}>
         Всего найдено групп: {groups.length}
       </Typography.Title>
@@ -27,7 +27,7 @@ export const GroupFound: React.FC<GroupFound> = ({
           icon={<SearchOutlined />}
           style={{ width: '100%' }}
         >
-          Получить данные о расписании групп
+          Получить расписание занятий
         </Button>
       </div>
     </div>
