@@ -3,6 +3,7 @@ import './App.css'
 import { Footer, Header, MainWorkplace } from './components'
 import { Content } from 'antd/es/layout/layout'
 import { useMemo } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 
 function App() {
   const isOpenedOnFreeServer = useMemo(
@@ -11,13 +12,16 @@ function App() {
   )
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Header />
-      <Content>
-        <MainWorkplace isOpenedOnFreeServer={isOpenedOnFreeServer} />
-      </Content>
-      <Footer />
-    </Layout>
+    <>
+      <Layout style={{ minHeight: '100vh' }}>
+        <Header />
+        <Content>
+          <MainWorkplace isOpenedOnFreeServer={isOpenedOnFreeServer} />
+        </Content>
+        <Footer />
+      </Layout>
+      <Analytics />
+    </>
   )
 }
 

@@ -18,6 +18,7 @@ import { GroupsService } from '@/data'
 import type {
   ScheduleDataItem,
   ScheduleRecord,
+  SelectedDayOfWeekType,
   SelectedWeekType,
   SortColumnType,
   WeekTypes,
@@ -44,6 +45,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [allLessons, setAllLessons] = useState<ScheduleDataItem[]>([])
   const [teachers, setTeachers] = useState<string[]>([])
   const [selectedTeacher, setSelectedTeacher] = useState<string | null>(paramTeacher ?? null)
+  const [selectedDayOfWeek, setSelectedDayOfWeek] = useState<SelectedDayOfWeekType>('allDays')
   const [selectedWeekType, setSelectedWeekType] = useState<SelectedWeekType>('allWeekTypes')
 
   const [tableData, setTableData] = useState<ScheduleRecord[]>(defaultTableData)
@@ -262,6 +264,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
               teachers={teachers}
               setSelectedTeacher={setSelectedTeacher}
               setSelectedWeekType={setSelectedWeekType}
+              setSelectedDayOfWeek={setSelectedDayOfWeek}
               hideEmptyDaysTypes={hideEmptyDaysTypes}
               hideEmptyRows={hideEmptyRows}
               hideTimeColumn={hideTimeColumn}
@@ -270,6 +273,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
               setHideTimeColumn={setHideTimeColumn}
               sortColumnType={sortColumnType}
               setSortColumnType={setSortColumnType}
+              selectedDayOfWeek={selectedDayOfWeek}
               selectedWeekType={selectedWeekType}
               selectedTeacher={selectedTeacher}
             />
@@ -282,6 +286,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
               hideEmptyRows={hideEmptyRows}
               tableData={tableData}
               selectedWeekType={selectedWeekType}
+              selectedDayOfWeek={selectedDayOfWeek}
               hideEmptyDaysTypes={hideEmptyDaysTypes}
               hideTimeColumn={hideTimeColumn}
               sortColumnType={sortColumnType}

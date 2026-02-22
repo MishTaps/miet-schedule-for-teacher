@@ -1,4 +1,5 @@
 import { Button, Card, ConfigProvider, DatePicker, Divider, Form, Tour, type TourProps } from 'antd'
+import { DownloadOutlined } from '@ant-design/icons'
 import './ExportSchedule.css'
 import { createEvents, type EventAttributes } from 'ics'
 import type { ScheduleRecord } from '@/types'
@@ -7,6 +8,7 @@ import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ru'
 import { useRef, useState } from 'react'
+import { track } from '@vercel/analytics'
 
 interface ExportSchedule {
   selectedTeacher: string
@@ -196,6 +198,11 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
 
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
+
+    track('Расписание скачено для импорта', {
+      teacherName: selectedTeacher,
+      weeksCount: getWeeksCount(),
+    })
   }
 
   const getFirstLessonDate = (dayNumber: number, weekTypeIndex: number) => {
@@ -368,7 +375,13 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
 
         <Form.Item>
           <div ref={ref2}>
-            <Button block onClick={handleDownload} type="primary" disabled={!canDownload}>
+            <Button
+              block
+              onClick={handleDownload}
+              type="primary"
+              disabled={!canDownload}
+              icon={<DownloadOutlined />}
+            >
               Скачать расписание (.ics)
             </Button>
           </div>
