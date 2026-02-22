@@ -8,7 +8,6 @@ import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ru'
 import { useRef, useState } from 'react'
-import { track } from '@vercel/analytics'
 
 interface ExportSchedule {
   selectedTeacher: string
@@ -198,11 +197,6 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
 
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
-
-    track('Расписание скачено для импорта', {
-      teacherName: selectedTeacher,
-      weeksCount: getWeeksCount(),
-    })
   }
 
   const getFirstLessonDate = (dayNumber: number, weekTypeIndex: number) => {
