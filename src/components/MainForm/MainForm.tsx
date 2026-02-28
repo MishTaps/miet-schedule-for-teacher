@@ -74,6 +74,7 @@ export const MainForm: React.FC<MainForm> = ({
             }
           />
         </Form.Item>
+        <Divider>Фильтрация</Divider>
         <Form.Item label="Выберите день недели:" name="dayOfWeek">
           <Flex>
             <Select<SelectedDayOfWeekType>
@@ -128,6 +129,7 @@ export const MainForm: React.FC<MainForm> = ({
             }}
           />
         </Form.Item>
+        <Divider>Настройки отображения</Divider>
         <Form.Item label="Сортировка по:" name="sortType" initialValue="day">
           <Tooltip
             title={

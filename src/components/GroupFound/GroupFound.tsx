@@ -1,4 +1,4 @@
-import { Button, Divider, Typography } from 'antd'
+import { Button, Divider } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 
 interface GroupFound {
@@ -15,9 +15,6 @@ export const GroupFound: React.FC<GroupFound> = ({
   return (
     <div>
       <Divider>Получение данных с сервера</Divider>
-      <Typography.Title level={5} style={{ padding: '0 30px', textAlign: 'center' }}>
-        Всего найдено групп: {groups.length}
-      </Typography.Title>
       <div style={{ padding: '0 30px', margin: '0 auto', maxWidth: '400px' }}>
         <Button
           type="primary"
