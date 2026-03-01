@@ -1,8 +1,8 @@
-import { Divider, Table } from 'antd'
+import { Button, Divider, Empty, message, Table } from 'antd'
 import { useMemo } from 'react'
 import type { ColumnType } from 'antd/es/table'
 import { columnsConfigDays, columnsConfigWeeks } from '../MainWorkplace/tableConfig/columnsConfig'
-import type { ScheduleRecord, WeekTypes } from '@/types'
+import type { ScheduleRecord, SelectedDayOfWeekType, SelectedWeekType, WeekTypes } from '@/types'
 
 interface ScheduleTable {
   hideEmptyRows: boolean
@@ -12,6 +12,8 @@ interface ScheduleTable {
   hideEmptyDaysTypes: boolean
   hideTimeColumn: boolean
   sortColumnType: string
+  setSelectedDayOfWeek: (value: SelectedDayOfWeekType) => void
+  setSelectedWeekType: (value: SelectedWeekType) => void
 }
 
 export const ScheduleTable: React.FC<ScheduleTable> = ({
@@ -22,6 +24,8 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({
   hideEmptyDaysTypes,
   hideTimeColumn,
   sortColumnType,
+  setSelectedDayOfWeek,
+  setSelectedWeekType,
 }) => {
   const columnsConfig = sortColumnType == 'day' ? columnsConfigDays : columnsConfigWeeks
 
@@ -116,6 +120,12 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({
     return tableData.filter((row) => !isRowEmpty(row))
   }, [hideEmptyRows, tableData, selectedWeekType, selectedDayOfWeek])
 
+  const resetFilters = () => {
+    setSelectedDayOfWeek('allDays')
+    setSelectedWeekType('allWeekTypes')
+    message.info('Фильтры сброшены')
+  }
+
   return (
     <>
       <Divider>Расписание преподавателя готово!</Divider>
@@ -125,7 +135,16 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({
         pagination={false}
         scroll={{ x: 'max-content' }}
         locale={{
-          emptyText: 'Занятия у преподавателя по выбранным фильтрам не найдены...',
+          emptyText: (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description="Занятия у преподавателя по выбранным фильтрам не найдены..."
+            >
+              <Button type="default" onClick={resetFilters}>
+                Сбросить фильтры
+              </Button>
+            </Empty>
+          ),
         }}
         sticky
       />

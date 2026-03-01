@@ -4,3 +4,9 @@
     align-items: center;
     margin-bottom: 12px;
 }
+
+.flexItem {
+    flex: 1 1 500px;
+    max-width: 500px;
+    margin: 0 auto;
+}

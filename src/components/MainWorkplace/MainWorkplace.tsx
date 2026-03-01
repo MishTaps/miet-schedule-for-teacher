@@ -290,6 +290,8 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
               hideEmptyDaysTypes={hideEmptyDaysTypes}
               hideTimeColumn={hideTimeColumn}
               sortColumnType={sortColumnType}
+              setSelectedDayOfWeek={setSelectedDayOfWeek}
+              setSelectedWeekType={setSelectedWeekType}
             />
             <ExportSchedule selectedTeacher={selectedTeacher} tableData={tableData} />
           </div>

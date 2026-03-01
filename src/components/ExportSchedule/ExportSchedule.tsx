@@ -1,4 +1,14 @@
-import { Button, Card, ConfigProvider, DatePicker, Divider, Form, Tour, type TourProps } from 'antd'
+import {
+  Button,
+  Card,
+  ConfigProvider,
+  DatePicker,
+  Divider,
+  Flex,
+  Form,
+  Tour,
+  type TourProps,
+} from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
 import './ExportSchedule.css'
 import { createEvents, type EventAttributes } from 'ics'
@@ -325,31 +335,36 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
         <Button block style={{ margin: '0 0 20px' }} onClick={() => setOpen(true)}>
           Как пользоваться экспортом?
         </Button>
-        <div ref={ref1} style={{ display: 'flex ', justifyContent: 'space-between ' }}>
+        <div ref={ref1}>
           <ConfigProvider locale={ruRU}>
-            <Form.Item label="Начальная неделя экспорта:">
-              <DatePicker
-                format={(value) =>
-                  `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
-                }
-                picker="week"
-                style={{ width: '100% ' }}
-                onChange={onChangeStart}
-                disabledDate={disableStartAfterEnd}
-              ></DatePicker>
-            </Form.Item>
-            <Form.Item label="Конечная неделя экспорта:">
-              <DatePicker
-                format={(value) =>
-                  `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
-                }
-                picker="week"
-                style={{ width: '100% ' }}
-                onChange={onChangeEnd}
-                disabledDate={disableEndBeforeStart}
-                required
-              ></DatePicker>
-            </Form.Item>
+            <Flex wrap="wrap" style={{ width: '100%' }} gap="middle">
+              <Form.Item
+                label="Начальная неделя экспорта:"
+                style={{ flex: '1 1 200px', marginBottom: 0 }}
+              >
+                <DatePicker
+                  format={(value) =>
+                    `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
+                  }
+                  style={{ width: '100%' }}
+                  picker="week"
+                  onChange={onChangeStart}
+                  disabledDate={disableStartAfterEnd}
+                ></DatePicker>
+              </Form.Item>
+              <Form.Item label="Конечная неделя экспорта:" style={{ flex: '1 1 200px' }}>
+                <DatePicker
+                  format={(value) =>
+                    `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
+                  }
+                  picker="week"
+                  style={{ width: '100%' }}
+                  onChange={onChangeEnd}
+                  disabledDate={disableEndBeforeStart}
+                  required
+                ></DatePicker>
+              </Form.Item>
+            </Flex>
           </ConfigProvider>
         </div>
         {canDownload && (

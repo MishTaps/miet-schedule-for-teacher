@@ -47,17 +47,120 @@ export const MainForm: React.FC<MainForm> = ({
     window.history.replaceState({}, '', url)
   }
 
+  const filtrationSettings = (
+    <>
+      <Divider style={{ marginTop: 0 }}>Фильтрация</Divider>
+      <Form.Item label="Выберите день недели:" name="dayOfWeek">
+        <Flex>
+          <Select<SelectedDayOfWeekType>
+            options={[
+              { value: 'day1', label: 'Понедельник' },
+              { value: 'day2', label: 'Вторник' },
+              { value: 'day3', label: 'Среда' },
+              { value: 'day4', label: 'Четверг' },
+              { value: 'day5', label: 'Пятница' },
+              { value: 'day6', label: 'Суббота' },
+              { value: 'allDays', label: 'Все дни недели' },
+            ]}
+            value={selectedDayOfWeek}
+            onChange={(value) => {
+              setSelectedDayOfWeek(value)
+              setSortColumnType('day')
+            }}
+          />
+          <Button
+            type="link"
+            onClick={() => {
+              const today = new Date().getDay() || 7
+              if (today == 7) {
+                message.warning(
+                  'Сегодня воскресенье, занятий нет. Показано расписание на всю неделю.',
+                  5,
+                )
+                setSelectedDayOfWeek('allDays')
+                return
+              }
+              setSelectedDayOfWeek(('day' + (new Date().getDay() || 7)) as SelectedDayOfWeekType)
+              setSortColumnType('day')
+            }}
+          >
+            Сегодня
+          </Button>
+        </Flex>
+      </Form.Item>
+      <Form.Item label="Выберите тип недели:" name="weekType">
+        <Select<SelectedWeekType>
+          options={[
+            { value: 'weekType0', label: 'Числитель I' },
+            { value: 'weekType1', label: 'Знаменатель I' },
+            { value: 'weekType2', label: 'Числитель II' },
+            { value: 'weekType3', label: 'Знаменатель II' },
+            { value: 'allWeekTypes', label: 'Все типы недель' },
+          ]}
+          defaultValue="allWeekTypes"
+          onChange={(value) => {
+            setSelectedWeekType(value)
+            setSortColumnType('day')
+          }}
+        />
+      </Form.Item>
+    </>
+  )
+
+  const visualSettings = (
+    <>
+      <Divider style={{ marginTop: 0 }}>Настройки отображения</Divider>
+      <Form.Item label="Сортировка по:" name="sortType" initialValue="day">
+        <Tooltip
+          title={
+            selectedDayOfWeek !== 'allDays' || selectedWeekType !== 'allWeekTypes'
+              ? 'Сортировка доступна только при выборе всех дней недели и всех типов недель'
+              : undefined
+          }
+        >
+          <div>
+            <Radio.Group
+              block
+              disabled={selectedDayOfWeek !== 'allDays' || selectedWeekType !== 'allWeekTypes'}
+              options={[
+                { label: 'Дням недели', value: 'day' },
+                { label: 'Типам недели', value: 'week' },
+              ]}
+              style={{ whiteSpace: 'normal' }}
+              defaultValue="day"
+              value={sortColumnType}
+              optionType="button"
+              buttonStyle="solid"
+              onChange={(e) => {
+                setSortColumnType(e.target.value)
+              }}
+            />
+          </div>
+        </Tooltip>
+      </Form.Item>
+      <div className="rowStyle">
+        <span>Скрыть дни, числители, знаменатели без занятий</span>
+        <Switch checked={hideEmptyDaysTypes} onChange={setHideEmptyDaysTypes} />
+      </div>
+      <div className="rowStyle">
+        <span>Скрыть пары без занятий</span>
+        <Switch checked={hideEmptyRows} onChange={setHideEmptyRows} />
+      </div>
+      <div className="rowStyle">
+        <span>Скрыть столбец «Пары»</span>
+        <Switch checked={hideTimeColumn} onChange={setHideTimeColumn} />
+      </div>
+    </>
+  )
+
   return (
     <div>
       <Divider>Заполните форму:</Divider>
-      <Form layout="vertical" style={{ maxWidth: '500px', margin: '0 auto', padding: '0 20px' }}>
-        <Form.Item label="Выберите преподавателя:">
+      <Form layout="vertical" style={{ margin: '0 auto', padding: '0 20px' }}>
+        <Form.Item label="Выберите преподавателя:" style={{ maxWidth: '500px', margin: '0 auto' }}>
           <Select
             showSearch
-            virtual
-            listHeight={256}
-            listItemHeight={32}
-            getPopupContainer={(trigger) => trigger.parentElement}
+            virtual={false}
             placeholder="Иванов Иван Иванович"
             options={teacherOptions}
             onSelect={(value) => {
@@ -74,102 +177,10 @@ export const MainForm: React.FC<MainForm> = ({
             }
           />
         </Form.Item>
-        <Divider>Фильтрация</Divider>
-        <Form.Item label="Выберите день недели:" name="dayOfWeek">
-          <Flex>
-            <Select<SelectedDayOfWeekType>
-              options={[
-                { value: 'day1', label: 'Понедельник' },
-                { value: 'day2', label: 'Вторник' },
-                { value: 'day3', label: 'Среда' },
-                { value: 'day4', label: 'Четверг' },
-                { value: 'day5', label: 'Пятница' },
-                { value: 'day6', label: 'Суббота' },
-                { value: 'allDays', label: 'Все дни недели' },
-              ]}
-              value={selectedDayOfWeek}
-              onChange={(value) => {
-                setSelectedDayOfWeek(value)
-                setSortColumnType('day')
-              }}
-            />
-            <Button
-              type="link"
-              onClick={() => {
-                const today = new Date().getDay() || 7
-                if (today == 7) {
-                  message.warning(
-                    'Сегодня воскресенье, занятий нет. Показано расписание на всю неделю.',
-                    5,
-                  )
-                  setSelectedDayOfWeek('allDays')
-                  return
-                }
-                setSelectedDayOfWeek(('day' + (new Date().getDay() || 7)) as SelectedDayOfWeekType)
-                setSortColumnType('day')
-              }}
-            >
-              Сегодня
-            </Button>
-          </Flex>
-        </Form.Item>
-        <Form.Item label="Выберите тип недели:" name="weekType">
-          <Select<SelectedWeekType>
-            options={[
-              { value: 'weekType0', label: 'Числитель I' },
-              { value: 'weekType1', label: 'Знаменатель I' },
-              { value: 'weekType2', label: 'Числитель II' },
-              { value: 'weekType3', label: 'Знаменатель II' },
-              { value: 'allWeekTypes', label: 'Все типы недель' },
-            ]}
-            defaultValue="allWeekTypes"
-            onChange={(value) => {
-              setSelectedWeekType(value)
-              setSortColumnType('day')
-            }}
-          />
-        </Form.Item>
-        <Divider>Настройки отображения</Divider>
-        <Form.Item label="Сортировка по:" name="sortType" initialValue="day">
-          <Tooltip
-            title={
-              selectedDayOfWeek !== 'allDays' || selectedWeekType !== 'allWeekTypes'
-                ? 'Сортировка доступна только при выборе всех дней недели и всех типов недель'
-                : undefined
-            }
-          >
-            <div>
-              <Radio.Group
-                block
-                disabled={selectedDayOfWeek !== 'allDays' || selectedWeekType !== 'allWeekTypes'}
-                options={[
-                  { label: 'Дням недели', value: 'day' },
-                  { label: 'Типам недели', value: 'week' },
-                ]}
-                style={{ whiteSpace: 'normal' }}
-                defaultValue="day"
-                value={sortColumnType}
-                optionType="button"
-                buttonStyle="solid"
-                onChange={(e) => {
-                  setSortColumnType(e.target.value)
-                }}
-              />
-            </div>
-          </Tooltip>
-        </Form.Item>
-        <div className="rowStyle">
-          <span>Скрыть дни, числители, знаменатели без занятий</span>
-          <Switch checked={hideEmptyDaysTypes} onChange={setHideEmptyDaysTypes} />
-        </div>
-        <div className="rowStyle">
-          <span>Скрыть пары без занятий</span>
-          <Switch checked={hideEmptyRows} onChange={setHideEmptyRows} />
-        </div>
-        <div className="rowStyle">
-          <span>Скрыть столбец «Пары»</span>
-          <Switch checked={hideTimeColumn} onChange={setHideTimeColumn} />
-        </div>
+        <Flex wrap="wrap" style={{ marginTop: 16 }}>
+          <div className="flexItem">{filtrationSettings}</div>
+          <div className="flexItem">{visualSettings}</div>
+        </Flex>
       </Form>
     </div>
   )
