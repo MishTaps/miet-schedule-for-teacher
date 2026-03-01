@@ -50,7 +50,7 @@ export const MainForm: React.FC<MainForm> = ({
   const filtrationSettings = (
     <>
       <Divider style={{ marginTop: 0 }}>Фильтрация</Divider>
-      <Form.Item label="Выберите день недели:" name="dayOfWeek">
+      <Form.Item label="Выберите день недели:">
         <Flex>
           <Select<SelectedDayOfWeekType>
             options={[
@@ -88,7 +88,7 @@ export const MainForm: React.FC<MainForm> = ({
           </Button>
         </Flex>
       </Form.Item>
-      <Form.Item label="Выберите тип недели:" name="weekType">
+      <Form.Item label="Выберите тип недели:">
         <Select<SelectedWeekType>
           options={[
             { value: 'weekType0', label: 'Числитель I' },
@@ -97,7 +97,7 @@ export const MainForm: React.FC<MainForm> = ({
             { value: 'weekType3', label: 'Знаменатель II' },
             { value: 'allWeekTypes', label: 'Все типы недель' },
           ]}
-          defaultValue="allWeekTypes"
+          value={selectedWeekType}
           onChange={(value) => {
             setSelectedWeekType(value)
             setSortColumnType('day')
