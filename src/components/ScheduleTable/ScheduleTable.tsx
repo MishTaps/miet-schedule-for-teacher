@@ -147,6 +147,7 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({
           ),
         }}
         sticky
+        bordered
       />
     </>
   )
