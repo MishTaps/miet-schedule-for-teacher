@@ -148,7 +148,9 @@ export const MainForm: React.FC<MainForm> = ({
       </div>
       <div className="rowStyle">
         <span>Скрыть столбец «Пары»</span>
-        <Switch checked={hideTimeColumn} onChange={setHideTimeColumn} />
+        <Tooltip title="Эта функция временно недоступна">
+          <Switch checked={hideTimeColumn} onChange={setHideTimeColumn} disabled />
+        </Tooltip>
       </div>
     </>
   )
