@@ -1,5 +1,6 @@
 import { message, Spin } from 'antd'
 import { useEffect, useState } from 'react'
+import localforage from 'localforage'
 
 import './MainWorkplace.css'
 
@@ -58,26 +59,68 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [timeRanges, setTimeRanges] = useState<string[]>([])
 
   useEffect(() => {
-    const fetchGroups = async () => {
+    const loadCache = async () => {
       try {
-        const groupsData = await GroupsService.getGroups()
-        setGroups(groupsData)
-      } catch {
-        setIsGroupsLoadedWithError(true)
-      } finally {
-        setLoadingGroups(false)
+        const cached = (await localforage.getItem('schedule_cache')) as {
+          allLessons: ScheduleDataItem[]
+          teachers: string[]
+          groups: string[]
+          scannedGroups: number
+          errorScannedGroups: string[]
+          cachedAt: number
+        } | null
+
+        if (cached) {
+          const CACHE_TTL = 1000 * 60 * 60 * 24
+
+          if (Date.now() - cached.cachedAt < CACHE_TTL) {
+            setAllLessons(cached.allLessons)
+            setTeachers(cached.teachers)
+            setGroups(cached.groups)
+            setScannedGroups(cached.scannedGroups)
+            setErrorScannedGroups(cached.errorScannedGroups)
+            setFinishedFirstGroupsLoading(true)
+            setLoadingGroups(false)
+            message.info(
+              'Расписание загружено из кэша браузера. Кэш обновляется каждые 24 часа.',
+              5,
+            )
+            return
+          }
+
+          await localforage.removeItem('schedule_cache')
+        }
+      } catch (e) {
+        console.error('Ошибка чтения кэша браузера', e)
       }
+
+      const fetchGroups = async () => {
+        try {
+          const groupsData = await GroupsService.getGroups()
+          setGroups(groupsData)
+        } catch {
+          setIsGroupsLoadedWithError(true)
+        } finally {
+          setLoadingGroups(false)
+        }
+      }
+
+      fetchGroups()
     }
 
-    fetchGroups()
+    loadCache()
   }, [])
 
   const loadAllSchedules = async (groupsToLoad = groups) => {
+    let localErrorGroups = [...errorScannedGroups]
+    let localScannedGroups = scannedGroups
     setScanningAGroupsSchedule(true)
     if (errorScannedGroups.length == 0) {
       setScannedGroups(0)
+      localScannedGroups = 0
     } else {
       setScannedGroups(groups.length - errorScannedGroups.length)
+      localScannedGroups = groups.length - errorScannedGroups.length
     }
 
     const BATCH_SIZE = 10
@@ -92,6 +135,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
           try {
             const res = await GroupsService.getScheduleForGroup(group)
             setScannedGroups((p) => p + 1)
+            localScannedGroups += 1
 
             if (!res?.Data) return
 
@@ -104,7 +148,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             })
 
             if (errorScannedGroups.includes(group)) {
-              setErrorScannedGroups((prev) => prev.filter((item) => item !== group))
+              localErrorGroups = localErrorGroups.filter((item) => item !== group)
             }
             if (i == 0) {
               res.Times.forEach((time) => {
@@ -114,7 +158,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             }
           } catch {
             message.error(`Ошибка загрузки группы: ${group}`)
-            setErrorScannedGroups((prev) => [...prev, group])
+            localErrorGroups.push(group)
           }
         }),
       )
@@ -122,6 +166,18 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
 
     setAllLessons(lessons)
     setTeachers(Array.from(teachersSet).sort())
+    setErrorScannedGroups(localErrorGroups)
+    setScannedGroups(localScannedGroups)
+
+    await localforage.setItem('schedule_cache', {
+      allLessons: lessons,
+      teachers: Array.from(teachersSet).sort(),
+      scannedGroups: localScannedGroups,
+      errorScannedGroups: localErrorGroups,
+      groups: groups,
+      cachedAt: Date.now(),
+    })
+
     setScanningAGroupsSchedule(false)
     setFinishedFirstGroupsLoading(true)
   }
@@ -228,7 +284,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   return (
     <Spin spinning={loadingGroups} tip="Получение списка групп...">
       <main>
-        {errorScannedGroups.length > 0 && finishedFirstGroupsLoading && (
+        {finishedFirstGroupsLoading && errorScannedGroups.length > 0 && (
           <LoadGroupsAlert
             errorScannedGroups={errorScannedGroups}
             scanningGroupsSchedule={scanningGroupsSchedule}
