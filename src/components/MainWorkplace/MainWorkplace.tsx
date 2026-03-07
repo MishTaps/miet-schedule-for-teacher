@@ -53,8 +53,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [sortColumnType, setSortColumnType] = useState<SortColumnType>('day')
   const [hideEmptyDaysTypes, setHideEmptyDaysTypes] = useState(true)
   const [hideEmptyRows, setHideEmptyRows] = useState(true)
-  // const [hideTimeColumn, setHideTimeColumn] = useState(window.innerWidth < 576)
-  const [hideTimeColumn, setHideTimeColumn] = useState(false)
+  const [hideTimeColumn, setHideTimeColumn] = useState(window.innerWidth < 576)
 
   const [timeCodes, setTimeCodes] = useState<number[]>([])
   const [timeRanges, setTimeRanges] = useState<string[]>([])
