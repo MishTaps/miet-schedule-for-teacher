@@ -66,6 +66,8 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
           allLessons: ScheduleDataItem[]
           teachers: string[]
           groups: string[]
+          timeCodes: number[]
+          timeRanges: string[]
           scannedGroups: number
           errorScannedGroups: string[]
           cachedAt: number
@@ -82,6 +84,8 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             setErrorScannedGroups(cached.errorScannedGroups)
             setFinishedFirstGroupsLoading(true)
             setLoadingGroups(false)
+            setTimeCodes(cached.timeCodes)
+            setTimeRanges(cached.timeRanges)
             message.info(
               'Расписание загружено из кэша браузера. Кэш обновляется каждые 24 часа.',
               5,
@@ -115,6 +119,9 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const loadAllSchedules = async (groupsToLoad = groups) => {
     let localErrorGroups = [...errorScannedGroups]
     let localScannedGroups = scannedGroups
+    const localTimeCodes: number[] = timeCodes
+    const localTimeRanges: string[] = timeRanges
+
     setScanningAGroupsSchedule(true)
     if (errorScannedGroups.length == 0) {
       setScannedGroups(0)
@@ -153,8 +160,8 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             }
             if (i == 0) {
               res.Times.forEach((time) => {
-                setTimeCodes((prev) => [...prev, time.Code])
-                setTimeRanges((prev) => [...prev, `${time.TimeFrom} - ${time.TimeTo}`])
+                localTimeCodes.push(time.Code)
+                localTimeRanges.push(`${time.TimeFrom} - ${time.TimeTo}`)
               })
             }
           } catch {
@@ -169,6 +176,8 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
     setTeachers(Array.from(teachersSet).sort())
     setErrorScannedGroups(localErrorGroups)
     setScannedGroups(localScannedGroups)
+    setTimeCodes(localTimeCodes)
+    setTimeRanges(localTimeRanges)
 
     await localforage.setItem('schedule_cache', {
       allLessons: lessons,
@@ -176,6 +185,8 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
       scannedGroups: localScannedGroups,
       errorScannedGroups: localErrorGroups,
       groups: groups,
+      timeCodes: localTimeCodes,
+      timeRanges: localTimeRanges,
       cachedAt: Date.now(),
     })
 
