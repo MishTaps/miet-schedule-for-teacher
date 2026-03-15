@@ -1,8 +1,22 @@
-import { Button, Divider, Empty, Flex, Form, message, Radio, Select, Switch, Tooltip } from 'antd'
+import {
+  Button,
+  Divider,
+  Empty,
+  Flex,
+  Form,
+  message,
+  Radio,
+  Select,
+  Space,
+  Switch,
+  Tooltip,
+} from 'antd'
 import './MainForm.css'
 import { useMemo } from 'react'
-import { UserOutlined } from '@ant-design/icons'
+import { HeartFilled, HeartOutlined, UserOutlined } from '@ant-design/icons'
 import type { SelectedDayOfWeekType, SelectedWeekType, SortColumnType } from '@/types'
+import localforage from 'localforage'
+import type { DefaultOptionType } from 'antd/es/select'
 
 interface MainForm {
   teachers: string[]
@@ -20,6 +34,8 @@ interface MainForm {
   selectedWeekType: SelectedWeekType
   sortColumnType: SortColumnType
   selectedTeacher: string | null
+  favoriteTeachers: string[]
+  setFavoriteTeachers: (value: string[]) => void
 }
 
 export const MainForm: React.FC<MainForm> = ({
@@ -38,13 +54,52 @@ export const MainForm: React.FC<MainForm> = ({
   selectedWeekType,
   sortColumnType,
   selectedTeacher,
+  favoriteTeachers,
+  setFavoriteTeachers,
 }) => {
-  const teacherOptions = useMemo(() => teachers.map((t) => ({ label: t, value: t })), [teachers])
+  const teacherOptions = useMemo<DefaultOptionType[]>(() => {
+    if (favoriteTeachers.length === 0) {
+      return teachers.map((t) => ({ label: t, value: t }))
+    }
+
+    const favoriteOptions = teachers
+      .filter((t) => favoriteTeachers.includes(t))
+      .map((t) => ({ label: t, value: t }))
+    const otherOptions = teachers
+      .filter((t) => !favoriteTeachers.includes(t))
+      .map((t) => ({ label: t, value: t }))
+
+    return [
+      { label: 'Избранные', options: favoriteOptions },
+      { label: 'Остальные преподаватели', options: otherOptions },
+    ]
+  }, [teachers, favoriteTeachers])
 
   const url = new URL(window.location.href)
   if (selectedTeacher) {
     url.searchParams.set('teacher', selectedTeacher)
     window.history.replaceState({}, '', url)
+  }
+
+  const toggleFavorite = async (e: React.MouseEvent<HTMLSpanElement>, value: string) => {
+    e.stopPropagation()
+
+    const isFavorite = favoriteTeachers.includes(value)
+    const deleteFromFavorites = favoriteTeachers.filter((id) => id !== value)
+    const addToFavorites = [...favoriteTeachers, value]
+
+    const newList = isFavorite ? deleteFromFavorites : addToFavorites
+    setFavoriteTeachers(newList)
+
+    try {
+      const currentCache = (await localforage.getItem('schedule_cache')) || {}
+      await localforage.setItem('schedule_cache', {
+        ...currentCache,
+        favoriteTeachers: newList,
+      })
+    } catch (err) {
+      console.error('Ошибка при сохранении в localforage:', err)
+    }
   }
 
   const filtrationSettings = (
@@ -160,7 +215,7 @@ export const MainForm: React.FC<MainForm> = ({
         <Form.Item label="Выберите преподавателя:" style={{ maxWidth: '500px', margin: '0 auto' }}>
           <Select
             showSearch
-            virtual={false}
+            virtual
             placeholder="Иванов Иван Иванович"
             options={teacherOptions}
             onSelect={(value) => {
@@ -169,6 +224,18 @@ export const MainForm: React.FC<MainForm> = ({
             }}
             prefix={<UserOutlined />}
             value={selectedTeacher}
+            optionRender={(option) => (
+              <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                {option.label}
+                <div onClick={(e) => toggleFavorite(e, option.value as string)}>
+                  {favoriteTeachers.includes(option.value as string) ? (
+                    <HeartFilled style={{ color: '#ff4d4f' }} />
+                  ) : (
+                    <HeartOutlined />
+                  )}
+                </div>
+              </Space>
+            )}
             notFoundContent={
               <Empty
                 description="Преподаватели не найдены"

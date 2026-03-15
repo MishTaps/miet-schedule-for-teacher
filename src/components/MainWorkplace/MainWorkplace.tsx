@@ -46,6 +46,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [allLessons, setAllLessons] = useState<ScheduleDataItem[]>([])
   const [teachers, setTeachers] = useState<string[]>([])
   const [selectedTeacher, setSelectedTeacher] = useState<string | null>(paramTeacher ?? null)
+  const [favoriteTeachers, setFavoriteTeachers] = useState<string[]>([])
   const [selectedDayOfWeek, setSelectedDayOfWeek] = useState<SelectedDayOfWeekType>('allDays')
   const [selectedWeekType, setSelectedWeekType] = useState<SelectedWeekType>('allWeekTypes')
 
@@ -64,6 +65,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
         const cached = (await localforage.getItem('schedule_cache')) as {
           allLessons: ScheduleDataItem[]
           teachers: string[]
+          favoriteTeachers: string[]
           groups: string[]
           timeCodes: number[]
           timeRanges: string[]
@@ -73,8 +75,9 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
         } | null
 
         if (cached) {
-          const CACHE_TTL = 1000 * 60 * 60 * 24
+          setFavoriteTeachers(cached.favoriteTeachers || [])
 
+          const CACHE_TTL = 1000 * 60 * 60 * 24
           if (Date.now() - cached.cachedAt < CACHE_TTL) {
             setAllLessons(cached.allLessons)
             setTeachers(cached.teachers)
@@ -342,6 +345,8 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
               selectedDayOfWeek={selectedDayOfWeek}
               selectedWeekType={selectedWeekType}
               selectedTeacher={selectedTeacher}
+              favoriteTeachers={favoriteTeachers}
+              setFavoriteTeachers={setFavoriteTeachers}
             />
           </div>
         )}
