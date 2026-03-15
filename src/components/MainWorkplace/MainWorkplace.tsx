@@ -320,7 +320,6 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
         {(scanningGroupsSchedule || finishedFirstGroupsLoading) && groupScannedPercent < 100 && (
           <LoadingProgressBar
             groupScannedPercent={groupScannedPercent}
-            isOpenedOnFreeServer={isOpenedOnFreeServer}
             scanningGroupsSchedule={scanningGroupsSchedule}
           />
         )}
