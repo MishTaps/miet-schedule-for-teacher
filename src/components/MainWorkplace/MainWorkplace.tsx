@@ -181,7 +181,9 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
     setTimeCodes(localTimeCodes)
     setTimeRanges(localTimeRanges)
 
+    const currentCache = (await localforage.getItem('schedule_cache')) || {}
     await localforage.setItem('schedule_cache', {
+      ...currentCache,
       allLessons: lessons,
       teachers: Array.from(teachersSet).sort(),
       scannedGroups: localScannedGroups,
