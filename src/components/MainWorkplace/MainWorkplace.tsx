@@ -87,19 +87,6 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
           setLoadingGroups(false)
           setTimeCodes(cached.timeCodes)
           setTimeRanges(cached.timeRanges)
-
-          // Временный костыль, пока кэш персональных данных переезжает в personal_data. Через какое-то время надо будет удалить
-          if (cached.favoriteTeachers) {
-            try {
-              const currentCache = (await localforage.getItem('personal_data')) || {}
-              await localforage.setItem('personal_data', {
-                ...currentCache,
-                favoriteTeachers: cached.favoriteTeachers,
-              })
-            } catch (err) {
-              console.error('Ошибка сохранения personal_data в кэше:', err)
-            }
-          }
         }
       } catch (e) {
         console.error('Ошибка чтения schedule_cache в кэше', e)
