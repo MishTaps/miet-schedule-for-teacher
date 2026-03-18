@@ -7,6 +7,7 @@ import './MainWorkplace.css'
 import { defaultTableData } from './tableConfig/defaultTableData'
 
 import {
+  CashedInfo,
   ExportSchedule,
   GroupFound,
   LoadGroupsAlert,
@@ -59,46 +60,49 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [timeCodes, setTimeCodes] = useState<number[]>([])
   const [timeRanges, setTimeRanges] = useState<string[]>([])
 
+  const [timeCashed, setTimeCashed] = useState<number>()
+
   useEffect(() => {
-    const loadCache = async () => {
+    const loadScheduleCache = async () => {
       try {
         const cached = (await localforage.getItem('schedule_cache')) as {
           allLessons: ScheduleDataItem[]
           teachers: string[]
-          favoriteTeachers: string[]
           groups: string[]
           timeCodes: number[]
           timeRanges: string[]
           scannedGroups: number
           errorScannedGroups: string[]
           cachedAt: number
+          favoriteTeachers?: string[]
         } | null
-
         if (cached) {
-          setFavoriteTeachers(cached.favoriteTeachers || [])
+          setTimeCashed(cached.cachedAt)
+          setAllLessons(cached.allLessons)
+          setTeachers(cached.teachers)
+          setGroups(cached.groups)
+          setScannedGroups(cached.scannedGroups)
+          setErrorScannedGroups(cached.errorScannedGroups)
+          setFinishedFirstGroupsLoading(true)
+          setLoadingGroups(false)
+          setTimeCodes(cached.timeCodes)
+          setTimeRanges(cached.timeRanges)
 
-          const CACHE_TTL = 1000 * 60 * 60 * 24
-          if (Date.now() - cached.cachedAt < CACHE_TTL) {
-            setAllLessons(cached.allLessons)
-            setTeachers(cached.teachers)
-            setGroups(cached.groups)
-            setScannedGroups(cached.scannedGroups)
-            setErrorScannedGroups(cached.errorScannedGroups)
-            setFinishedFirstGroupsLoading(true)
-            setLoadingGroups(false)
-            setTimeCodes(cached.timeCodes)
-            setTimeRanges(cached.timeRanges)
-            message.info(
-              'Расписание загружено из кэша браузера. Кэш обновляется каждые 24 часа.',
-              5,
-            )
-            return
+          // Временный костыль, пока кэш персональных данных переезжает в personal_data. Через какое-то время надо будет удалить
+          if (cached.favoriteTeachers) {
+            try {
+              const currentCache = (await localforage.getItem('personal_data')) || {}
+              await localforage.setItem('personal_data', {
+                ...currentCache,
+                favoriteTeachers: cached.favoriteTeachers,
+              })
+            } catch (err) {
+              console.error('Ошибка сохранения personal_data в кэше:', err)
+            }
           }
-
-          await localforage.removeItem('schedule_cache')
         }
       } catch (e) {
-        console.error('Ошибка чтения кэша браузера', e)
+        console.error('Ошибка чтения schedule_cache в кэше', e)
       }
 
       const fetchGroups = async () => {
@@ -115,7 +119,21 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
       fetchGroups()
     }
 
-    loadCache()
+    const loadPersonalDataCache = async () => {
+      try {
+        const cached = (await localforage.getItem('personal_data')) as {
+          favoriteTeachers: string[]
+        } | null
+        if (cached) {
+          setFavoriteTeachers(cached.favoriteTeachers)
+        }
+      } catch (e) {
+        console.error('Ошибка чтения personal_data в кэше', e)
+      }
+    }
+
+    loadScheduleCache()
+    loadPersonalDataCache()
   }, [])
 
   const loadAllSchedules = async (groupsToLoad = groups) => {
@@ -181,9 +199,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
     setTimeCodes(localTimeCodes)
     setTimeRanges(localTimeRanges)
 
-    const currentCache = (await localforage.getItem('schedule_cache')) || {}
     await localforage.setItem('schedule_cache', {
-      ...currentCache,
       allLessons: lessons,
       teachers: Array.from(teachersSet).sort(),
       scannedGroups: localScannedGroups,
@@ -300,6 +316,7 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   return (
     <Spin spinning={loadingGroups} tip="Получение списка групп...">
       <main>
+        <CashedInfo timeCashed={timeCashed} setFavoriteTeachers={setFavoriteTeachers} />
         {finishedFirstGroupsLoading && errorScannedGroups.length > 0 && (
           <LoadGroupsAlert
             errorScannedGroups={errorScannedGroups}
@@ -307,7 +324,6 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
             loadAllSchedules={loadAllSchedules}
           />
         )}
-
         {!finishedFirstGroupsLoading && !isGroupsLoadedWithError && (
           <div>
             <GroupFound

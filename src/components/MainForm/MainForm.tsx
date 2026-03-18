@@ -92,13 +92,13 @@ export const MainForm: React.FC<MainForm> = ({
     setFavoriteTeachers(newList)
 
     try {
-      const currentCache = (await localforage.getItem('schedule_cache')) || {}
-      await localforage.setItem('schedule_cache', {
+      const currentCache = (await localforage.getItem('personal_data')) || {}
+      await localforage.setItem('personal_data', {
         ...currentCache,
         favoriteTeachers: newList,
       })
     } catch (err) {
-      console.error('Ошибка при сохранении в localforage:', err)
+      console.error('Ошибка сохранения personal_data в кэше:', err)
     }
   }
 
