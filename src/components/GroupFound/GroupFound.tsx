@@ -1,4 +1,4 @@
-import { Button, Divider } from 'antd'
+import { Button, Divider, Row, Col } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 
 interface GroupFound {
@@ -13,9 +13,9 @@ export const GroupFound: React.FC<GroupFound> = ({
   loadAllSchedules,
 }) => {
   return (
-    <div>
-      <Divider>Получение данных с сервера</Divider>
-      <div style={{ padding: '0 30px', margin: '0 auto', maxWidth: '400px' }}>
+    <Row justify="center" align="middle" style={{ height: '50vh' }}>
+      <Col style={{ width: '100%', maxWidth: 300 }}>
+        <Divider>Получение данных с сервера</Divider>
         <Button
           type="primary"
           block
@@ -26,7 +26,7 @@ export const GroupFound: React.FC<GroupFound> = ({
         >
           Получить расписание занятий
         </Button>
-      </div>
-    </div>
+      </Col>
+    </Row>
   )
 }
