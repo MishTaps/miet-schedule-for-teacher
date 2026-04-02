@@ -1,0 +1,8 @@
+.text {
+    white-space: pre-line;
+    text-align: center;
+}
+
+.column {
+    max-width: 200px;
+}

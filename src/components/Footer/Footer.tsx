@@ -1,4 +1,4 @@
-import './Footer.css'
+import styles from './Footer.module.css'
 import { GithubOutlined } from '@ant-design/icons'
 
 export const Footer = () => {
@@ -10,10 +10,10 @@ export const Footer = () => {
       </p>
       <p>Полезные ссылки и обратная связь:</p>
 
-      <div className="footer-links">
+      <div className={styles.footerLinks}>
         <div>
           <a href="https://github.com/MishTaps/miet-schedule-for-teacher" target="_blank">
-            <GithubOutlined style={{ color: 'black', paddingRight: '2px' }} />
+            <GithubOutlined className={styles.githubIcon} />
             Проект GitHub
           </a>
         </div>
@@ -21,7 +21,7 @@ export const Footer = () => {
           <a
             href="https://t.me/mietScheduleTeacherFeedbackBot"
             target="_blank"
-            style={{ display: 'inline-flex' }}
+            className={styles.telegramLink}
           >
             <img src="/tg-icon.svg" width="16" height="16"></img>
             Telegram

@@ -2,16 +2,12 @@ import { Alert, Button } from 'antd'
 import localforage from 'localforage'
 
 interface CashedInfo {
-  timeCashed?: number
+  cashedTime: number
   setFavoriteTeachers: (value: string[]) => void
 }
 
-export const CashedInfo: React.FC<CashedInfo> = ({ timeCashed }) => {
-  if (!timeCashed) {
-    return
-  }
-
-  const formattedDate = new Date(timeCashed).toLocaleDateString('ru-RU', {
+export const CashedInfo: React.FC<CashedInfo> = ({ cashedTime }) => {
+  const formattedDate = new Date(cashedTime).toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -29,7 +25,7 @@ export const CashedInfo: React.FC<CashedInfo> = ({ timeCashed }) => {
   )
 
   const day = 1000 * 60 * 60 * 24
-  if (Date.now() - timeCashed < day) {
+  if (Date.now() - cashedTime < day) {
     return (
       <Alert
         title={`Расписание загружено ${formattedDate}`}
@@ -42,7 +38,7 @@ export const CashedInfo: React.FC<CashedInfo> = ({ timeCashed }) => {
   }
 
   const week = day * 7
-  if (Date.now() - timeCashed < week) {
+  if (Date.now() - cashedTime < week) {
     return (
       <Alert
         title={`Расписание загружено более суток назад: ${formattedDate}`}
@@ -55,7 +51,7 @@ export const CashedInfo: React.FC<CashedInfo> = ({ timeCashed }) => {
   }
 
   const month = day * 30
-  if (Date.now() - timeCashed < month) {
+  if (Date.now() - cashedTime < month) {
     return (
       <Alert
         title={`Расписание загружено более недели назад: ${formattedDate}`}
@@ -68,7 +64,7 @@ export const CashedInfo: React.FC<CashedInfo> = ({ timeCashed }) => {
   }
 
   const halfOfYear = month * 6
-  if (Date.now() - timeCashed < halfOfYear) {
+  if (Date.now() - cashedTime < halfOfYear) {
     return (
       <Alert
         title={`Расписание загружено более месяца назад: ${formattedDate}`}

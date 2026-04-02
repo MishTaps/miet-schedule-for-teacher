@@ -11,7 +11,7 @@ import {
   Switch,
   Tooltip,
 } from 'antd'
-import './MainForm.css'
+import styles from './MainForm.module.css'
 import { useMemo } from 'react'
 import { HeartFilled, HeartOutlined, UserOutlined } from '@ant-design/icons'
 import type { SelectedDayOfWeekType, SelectedWeekType, SortColumnType } from '@/types'
@@ -81,6 +81,11 @@ export const MainForm: React.FC<MainForm> = ({
     window.history.replaceState({}, '', url)
   }
 
+  const selectTeacher = (value: string) => {
+    setSelectedTeacher(value)
+    ;(document.activeElement as HTMLElement)?.blur()
+  }
+
   const toggleFavorite = async (e: React.MouseEvent<HTMLSpanElement>, value: string) => {
     e.stopPropagation()
 
@@ -102,9 +107,87 @@ export const MainForm: React.FC<MainForm> = ({
     }
   }
 
-  const filtrationSettings = (
+  return (
     <>
-      <Divider style={{ marginTop: 0 }}>Фильтрация</Divider>
+      <Divider>Заполните форму:</Divider>
+      <Form layout="vertical" className={styles.form}>
+        <Form.Item label="Выберите преподавателя:" className={styles.select}>
+          <Select
+            showSearch
+            virtual
+            placeholder="Иванов Иван Иванович"
+            options={teacherOptions}
+            onSelect={selectTeacher}
+            prefix={<UserOutlined />}
+            value={selectedTeacher}
+            optionRender={(option) => (
+              <Space className={styles.teacherItem}>
+                {option.label}
+                <div onClick={(e) => toggleFavorite(e, option.value as string)}>
+                  {favoriteTeachers.includes(option.value as string) ? (
+                    <HeartFilled className={styles.favorite} />
+                  ) : (
+                    <HeartOutlined />
+                  )}
+                </div>
+              </Space>
+            )}
+            notFoundContent={
+              <Empty
+                description="Преподаватели не найдены"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              ></Empty>
+            }
+          />
+        </Form.Item>
+        <Flex wrap="wrap" className={styles.settingsBox}>
+          <div className={styles.settingsBody}>
+            <FiltrationSettings
+              setSelectedWeekType={setSelectedWeekType}
+              setSelectedDayOfWeek={setSelectedDayOfWeek}
+              setSortColumnType={setSortColumnType}
+              selectedDayOfWeek={selectedDayOfWeek}
+              selectedWeekType={selectedWeekType}
+            />
+          </div>
+          <div className={styles.settingsBody}>
+            <VisualSettings
+              hideEmptyDaysTypes={hideEmptyDaysTypes}
+              hideEmptyRows={hideEmptyRows}
+              hideTimeColumn={hideTimeColumn}
+              setHideEmptyDaysTypes={setHideEmptyDaysTypes}
+              setHideEmptyRows={setHideEmptyRows}
+              setHideTimeColumn={setHideTimeColumn}
+              setSortColumnType={setSortColumnType}
+              selectedDayOfWeek={selectedDayOfWeek}
+              selectedWeekType={selectedWeekType}
+              sortColumnType={sortColumnType}
+            />
+          </div>
+        </Flex>
+      </Form>
+    </>
+  )
+}
+
+interface FiltrationSettingsProps {
+  setSelectedWeekType: (value: SelectedWeekType) => void
+  setSelectedDayOfWeek: (value: SelectedDayOfWeekType) => void
+  setSortColumnType: (value: SortColumnType) => void
+  selectedDayOfWeek: SelectedDayOfWeekType
+  selectedWeekType: SelectedWeekType
+}
+
+const FiltrationSettings: React.FC<FiltrationSettingsProps> = ({
+  selectedDayOfWeek,
+  setSelectedDayOfWeek,
+  setSortColumnType,
+  selectedWeekType,
+  setSelectedWeekType,
+}) => {
+  return (
+    <>
+      <Divider>Фильтрация</Divider>
       <Form.Item label="Выберите день недели:">
         <Flex>
           <Select<SelectedDayOfWeekType>
@@ -161,10 +244,36 @@ export const MainForm: React.FC<MainForm> = ({
       </Form.Item>
     </>
   )
+}
 
-  const visualSettings = (
+interface VisualSettingsProps {
+  hideEmptyDaysTypes: boolean
+  hideEmptyRows: boolean
+  hideTimeColumn: boolean
+  setHideEmptyDaysTypes: (value: boolean) => void
+  setHideEmptyRows: (value: boolean) => void
+  setHideTimeColumn: (value: boolean) => void
+  setSortColumnType: (value: SortColumnType) => void
+  selectedDayOfWeek: SelectedDayOfWeekType
+  selectedWeekType: SelectedWeekType
+  sortColumnType: SortColumnType
+}
+
+const VisualSettings: React.FC<VisualSettingsProps> = ({
+  selectedDayOfWeek,
+  setSortColumnType,
+  selectedWeekType,
+  sortColumnType,
+  hideEmptyDaysTypes,
+  setHideEmptyDaysTypes,
+  hideEmptyRows,
+  setHideEmptyRows,
+  hideTimeColumn,
+  setHideTimeColumn,
+}) => {
+  return (
     <>
-      <Divider style={{ marginTop: 0 }}>Настройки отображения</Divider>
+      <Divider>Настройки отображения</Divider>
       <Form.Item label="Сортировка по:" name="sortType" initialValue="day">
         <Tooltip
           title={
@@ -181,7 +290,6 @@ export const MainForm: React.FC<MainForm> = ({
                 { label: 'Дням недели', value: 'day' },
                 { label: 'Типам недели', value: 'week' },
               ]}
-              style={{ whiteSpace: 'normal' }}
               defaultValue="day"
               value={sortColumnType}
               optionType="button"
@@ -193,62 +301,18 @@ export const MainForm: React.FC<MainForm> = ({
           </div>
         </Tooltip>
       </Form.Item>
-      <div className="rowStyle">
+      <div className={styles.switch}>
         <span>Скрыть дни, числители, знаменатели без занятий</span>
         <Switch checked={hideEmptyDaysTypes} onChange={setHideEmptyDaysTypes} />
       </div>
-      <div className="rowStyle">
+      <div className={styles.switch}>
         <span>Скрыть пары без занятий</span>
         <Switch checked={hideEmptyRows} onChange={setHideEmptyRows} />
       </div>
-      <div className="rowStyle">
+      <div className={styles.switch}>
         <span>Скрыть столбец «Пары»</span>
         <Switch checked={hideTimeColumn} onChange={setHideTimeColumn} />
       </div>
     </>
-  )
-
-  return (
-    <div>
-      <Divider>Заполните форму:</Divider>
-      <Form layout="vertical" style={{ margin: '0 auto', padding: '0 20px' }}>
-        <Form.Item label="Выберите преподавателя:" style={{ maxWidth: '500px', margin: '0 auto' }}>
-          <Select
-            showSearch
-            virtual
-            placeholder="Иванов Иван Иванович"
-            options={teacherOptions}
-            onSelect={(value) => {
-              setSelectedTeacher(value)
-              ;(document.activeElement as HTMLElement)?.blur()
-            }}
-            prefix={<UserOutlined />}
-            value={selectedTeacher}
-            optionRender={(option) => (
-              <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-                {option.label}
-                <div onClick={(e) => toggleFavorite(e, option.value as string)}>
-                  {favoriteTeachers.includes(option.value as string) ? (
-                    <HeartFilled style={{ color: '#ff4d4f' }} />
-                  ) : (
-                    <HeartOutlined />
-                  )}
-                </div>
-              </Space>
-            )}
-            notFoundContent={
-              <Empty
-                description="Преподаватели не найдены"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              ></Empty>
-            }
-          />
-        </Form.Item>
-        <Flex wrap="wrap" style={{ marginTop: 16 }}>
-          <div className="flexItem">{filtrationSettings}</div>
-          <div className="flexItem">{visualSettings}</div>
-        </Flex>
-      </Form>
-    </div>
   )
 }

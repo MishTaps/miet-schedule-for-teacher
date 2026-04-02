@@ -1,0 +1,35 @@
+.form {
+    padding: 0 20px;
+    margin: 0 auto;
+}
+
+.select {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.favorite {
+    color: #ff4d4f;
+}
+
+.teacherItem {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.switch {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.settingsBox {
+    margin-top: 16px;
+}
+
+.settingsBody {
+    flex: 1 1 500px;
+    max-width: 500px;
+    margin: 0 auto;
+}

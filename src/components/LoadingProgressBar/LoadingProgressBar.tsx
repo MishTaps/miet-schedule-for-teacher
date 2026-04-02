@@ -1,4 +1,6 @@
 import { Progress } from 'antd'
+import styles from './LoadingProgressBar.module.css'
+
 interface LoadingProgressBar {
   groupScannedPercent: number
   scanningGroupsSchedule: boolean
@@ -9,15 +11,11 @@ export const LoadingProgressBar: React.FC<LoadingProgressBar> = ({
   scanningGroupsSchedule,
 }) => {
   return (
-    <>
-      <div style={{ padding: '0 30px 20px', textAlign: 'center' }}>
-        <Progress
-          percent={groupScannedPercent}
-          status={scanningGroupsSchedule ? 'active' : 'exception'}
-          percentPosition={{ align: 'center' }}
-          style={{ padding: '5px 0' }}
-        />
-      </div>
-    </>
+    <Progress
+      percent={groupScannedPercent}
+      status={scanningGroupsSchedule ? 'active' : 'exception'}
+      percentPosition={{ align: 'center' }}
+      className={styles.progressBar}
+    />
   )
 }

@@ -10,7 +10,7 @@ import {
   type TourProps,
 } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
-import './ExportSchedule.css'
+import styles from './ExportSchedule.module.css'
 import { createEvents, type EventAttributes } from 'ics'
 import type { ScheduleRecord } from '@/types'
 import ruRU from 'antd/locale/ru_RU'
@@ -100,18 +100,7 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
         </div>
       ),
       target: () => ref2.current,
-      cover: (
-        <img
-          draggable={false}
-          src="/tour-step-2.png"
-          style={{
-            width: '100%',
-            height: 'auto',
-            objectFit: 'contain',
-            maxHeight: 240,
-          }}
-        />
-      ),
+      cover: <img draggable={false} src="/tour-step-2.png" className={styles.image2} />,
     },
   ]
 
@@ -313,7 +302,7 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
       const typeLabel = types[(weekIndex - 1) % 4]
 
       weeks.push(
-        <div key={weekIndex} style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div key={weekIndex} className={styles.weekItem}>
           <p>
             Неделя №{weekIndex}. {typeLabel}:
           </p>
@@ -331,51 +320,42 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tabl
   return (
     <div ref={ref0}>
       <Divider>Экспорт расписания в ваш календарь</Divider>
-      <Form layout="vertical" style={{ maxWidth: '500px', margin: '0 auto', padding: '0 20px' }}>
-        <Button block style={{ margin: '0 0 20px' }} onClick={() => setOpen(true)}>
+      <Form layout="vertical" className={styles.form}>
+        <Button block className={styles.howUseButton} onClick={() => setOpen(true)}>
           Как пользоваться экспортом?
         </Button>
         <div ref={ref1}>
-          <ConfigProvider locale={ruRU}>
-            <Flex wrap="wrap" style={{ width: '100%' }} gap="middle">
-              <Form.Item
-                label="Начальная неделя экспорта:"
-                style={{ flex: '1 1 200px', marginBottom: 0 }}
-              >
-                <DatePicker
-                  format={(value) =>
-                    `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
-                  }
-                  style={{ width: '100%' }}
-                  picker="week"
-                  onChange={onChangeStart}
-                  disabledDate={disableStartAfterEnd}
-                ></DatePicker>
-              </Form.Item>
-              <Form.Item label="Конечная неделя экспорта:" style={{ flex: '1 1 200px' }}>
-                <DatePicker
-                  format={(value) =>
-                    `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
-                  }
-                  picker="week"
-                  style={{ width: '100%' }}
-                  onChange={onChangeEnd}
-                  disabledDate={disableEndBeforeStart}
-                  required
-                ></DatePicker>
-              </Form.Item>
-            </Flex>
-          </ConfigProvider>
+          <Flex wrap="wrap" gap="middle">
+            <Form.Item label="Начальная неделя экспорта:" className={styles.selectWeek}>
+              <DatePicker
+                format={(value) =>
+                  `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
+                }
+                className={styles.weekInput}
+                picker="week"
+                onChange={onChangeStart}
+                disabledDate={disableStartAfterEnd}
+              ></DatePicker>
+            </Form.Item>
+            <Form.Item label="Конечная неделя экспорта:" className={styles.selectWeek}>
+              <DatePicker
+                format={(value) =>
+                  `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
+                }
+                picker="week"
+                className={styles.weekInput}
+                onChange={onChangeEnd}
+                disabledDate={disableEndBeforeStart}
+                required
+              ></DatePicker>
+            </Form.Item>
+          </Flex>
         </div>
         {canDownload && (
           <Card
             size="small"
             title="Информация об экспортируемых неделях"
-            style={{
-              width: '100%',
-              height: '250px',
-              margin: '0 auto 20px',
-            }}
+            className={styles.card}
             styles={{ body: { height: 'calc(100% - 38px)', overflowY: 'auto' } }}
           >
             <div>{generateWeeksList()}</div>

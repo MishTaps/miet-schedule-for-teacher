@@ -4,7 +4,16 @@ footer {
     background-color: #f0f0f0;
 }
 
-.footer-links {
+.footerLinks {
     display: flex;
     gap: 16px;
+}
+
+.githubIcon {
+    color: black;
+    padding-right: 2px;
+}
+
+.telegramLink {
+    display: inline-flex;
 }

@@ -1,17 +1,14 @@
 import { message, Spin } from 'antd'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import localforage from 'localforage'
-
-import './MainWorkplace.css'
 
 import { defaultTableData } from './tableConfig/defaultTableData'
 
 import {
   CashedInfo,
   ExportSchedule,
-  GroupFound,
+  GetScheduleButton,
   LoadGroupsAlert,
-  LoadingProgressBar,
   MainForm,
   ScheduleTable,
   ServerErrorAlert,
@@ -26,17 +23,15 @@ import type {
   WeekTypes,
 } from '@/types'
 
-interface MainWorkplaceProps {
-  isOpenedOnFreeServer: boolean
-}
+export const MainWorkplace = () => {
+  const isOpenedOnPhone = window.innerWidth < 576
 
-export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServer }) => {
   const params = new URLSearchParams(window.location.search)
   const paramTeacher = params.get('teacher')
 
   const [groups, setGroups] = useState<string[]>([])
   const [loadingGroups, setLoadingGroups] = useState(true)
-  const [finishedFirstGroupsLoading, setFinishedFirstGroupsLoading] = useState(false)
+  const [finishedFirstGroupsLoading, setFinishedFirstGroupsLoading] = useState<boolean | null>(null)
   const [isGroupsLoadedWithError, setIsGroupsLoadedWithError] = useState(false)
   const [scanningGroupsSchedule, setScanningAGroupsSchedule] = useState(false)
 
@@ -55,73 +50,12 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
   const [sortColumnType, setSortColumnType] = useState<SortColumnType>('day')
   const [hideEmptyDaysTypes, setHideEmptyDaysTypes] = useState(true)
   const [hideEmptyRows, setHideEmptyRows] = useState(true)
-  const [hideTimeColumn, setHideTimeColumn] = useState(window.innerWidth < 576)
+  const [hideTimeColumn, setHideTimeColumn] = useState(isOpenedOnPhone)
 
   const [timeCodes, setTimeCodes] = useState<number[]>([])
   const [timeRanges, setTimeRanges] = useState<string[]>([])
 
-  const [timeCashed, setTimeCashed] = useState<number>()
-
-  useEffect(() => {
-    const loadScheduleCache = async () => {
-      try {
-        const cached = (await localforage.getItem('schedule_cache')) as {
-          allLessons: ScheduleDataItem[]
-          teachers: string[]
-          groups: string[]
-          timeCodes: number[]
-          timeRanges: string[]
-          scannedGroups: number
-          errorScannedGroups: string[]
-          cachedAt: number
-          favoriteTeachers?: string[]
-        } | null
-        if (cached) {
-          setTimeCashed(cached.cachedAt)
-          setAllLessons(cached.allLessons)
-          setTeachers(cached.teachers)
-          setGroups(cached.groups)
-          setScannedGroups(cached.scannedGroups)
-          setErrorScannedGroups(cached.errorScannedGroups)
-          setFinishedFirstGroupsLoading(true)
-          setLoadingGroups(false)
-          setTimeCodes(cached.timeCodes)
-          setTimeRanges(cached.timeRanges)
-        }
-      } catch (e) {
-        console.error('Ошибка чтения schedule_cache в кэше', e)
-      }
-
-      const fetchGroups = async () => {
-        try {
-          const groupsData = await GroupsService.getGroups()
-          setGroups(groupsData)
-        } catch {
-          setIsGroupsLoadedWithError(true)
-        } finally {
-          setLoadingGroups(false)
-        }
-      }
-
-      fetchGroups()
-    }
-
-    const loadPersonalDataCache = async () => {
-      try {
-        const cached = (await localforage.getItem('personal_data')) as {
-          favoriteTeachers: string[]
-        } | null
-        if (cached) {
-          setFavoriteTeachers(cached.favoriteTeachers)
-        }
-      } catch (e) {
-        console.error('Ошибка чтения personal_data в кэше', e)
-      }
-    }
-
-    loadScheduleCache()
-    loadPersonalDataCache()
-  }, [])
+  const [cashedTime, setCashedTime] = useState<number>()
 
   const loadAllSchedules = async (groupsToLoad = groups) => {
     let localErrorGroups = [...errorScannedGroups]
@@ -179,12 +113,14 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
       )
     }
 
+    const localCashedTime = Date.now()
     setAllLessons(lessons)
     setTeachers(Array.from(teachersSet).sort())
     setErrorScannedGroups(localErrorGroups)
     setScannedGroups(localScannedGroups)
     setTimeCodes(localTimeCodes)
     setTimeRanges(localTimeRanges)
+    setCashedTime(localCashedTime)
 
     await localforage.setItem('schedule_cache', {
       allLessons: lessons,
@@ -194,15 +130,71 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
       groups: groups,
       timeCodes: localTimeCodes,
       timeRanges: localTimeRanges,
-      cachedAt: Date.now(),
+      cachedAt: localCashedTime,
     })
 
     setScanningAGroupsSchedule(false)
     setFinishedFirstGroupsLoading(true)
   }
 
-  useEffect(() => {
-    const buildScheduleForTeacher = (teacher: string) => {
+  const loadScheduleCache = async () => {
+    try {
+      const cached = (await localforage.getItem('schedule_cache')) as {
+        allLessons: ScheduleDataItem[]
+        teachers: string[]
+        groups: string[]
+        timeCodes: number[]
+        timeRanges: string[]
+        scannedGroups: number
+        errorScannedGroups: string[]
+        cachedAt: number
+        favoriteTeachers?: string[]
+      } | null
+      if (cached) {
+        setCashedTime(cached.cachedAt)
+        setAllLessons(cached.allLessons)
+        setTeachers(cached.teachers)
+        setGroups(cached.groups)
+        setScannedGroups(cached.scannedGroups)
+        setErrorScannedGroups(cached.errorScannedGroups)
+        setFinishedFirstGroupsLoading(true)
+        setLoadingGroups(false)
+        setTimeCodes(cached.timeCodes)
+        setTimeRanges(cached.timeRanges)
+      } else {
+        setFinishedFirstGroupsLoading(false)
+      }
+    } catch (e) {
+      console.error('Ошибка чтения schedule_cache в кэше', e)
+    }
+  }
+
+  const loadPersonalDataCache = async () => {
+    try {
+      const cached = (await localforage.getItem('personal_data')) as {
+        favoriteTeachers: string[]
+      } | null
+      if (cached) {
+        setFavoriteTeachers(cached.favoriteTeachers)
+      }
+    } catch (e) {
+      console.error('Ошибка чтения personal_data в кэше', e)
+    }
+  }
+
+  const fetchGroups = async () => {
+    try {
+      const groupsData = await GroupsService.getGroups()
+      setGroups(groupsData)
+    } catch {
+      setIsGroupsLoadedWithError(true)
+    } finally {
+      setLoadingGroups(false)
+    }
+  }
+
+  const buildScheduleForTeacher = useCallback(
+    (teacher: string) => {
       const updatedData: ScheduleRecord[] = structuredClone(defaultTableData)
 
       allLessons
@@ -293,86 +285,92 @@ export const MainWorkplace: React.FC<MainWorkplaceProps> = ({ isOpenedOnFreeServ
           }
         })
       setTableData(updatedData)
-    }
+    },
+    [allLessons, hideTimeColumn, timeCodes, timeRanges],
+  )
 
+  useEffect(() => {
+    loadScheduleCache()
+    loadPersonalDataCache()
+  }, [])
+
+  useEffect(() => {
+    if (finishedFirstGroupsLoading === false) {
+      fetchGroups()
+    }
+  }, [finishedFirstGroupsLoading])
+
+  useEffect(() => {
     if (selectedTeacher) {
       buildScheduleForTeacher(selectedTeacher)
     }
-  }, [allLessons, hideTimeColumn, selectedTeacher, timeCodes, timeRanges])
+  }, [buildScheduleForTeacher, selectedTeacher])
+
+  if (isGroupsLoadedWithError) {
+    return <ServerErrorAlert />
+  }
+
+  if (!finishedFirstGroupsLoading) {
+    return (
+      <Spin spinning={loadingGroups} tip="Получение списка групп...">
+        <GetScheduleButton
+          groups={groups}
+          scanningGroupsSchedule={scanningGroupsSchedule}
+          loadAllSchedules={loadAllSchedules}
+          groupScannedPercent={groupScannedPercent}
+        />
+      </Spin>
+    )
+  }
 
   return (
-    <Spin spinning={loadingGroups} tip="Получение списка групп...">
-      <main>
-        <CashedInfo timeCashed={timeCashed} setFavoriteTeachers={setFavoriteTeachers} />
-        {finishedFirstGroupsLoading && errorScannedGroups.length > 0 && (
-          <LoadGroupsAlert
-            errorScannedGroups={errorScannedGroups}
-            scanningGroupsSchedule={scanningGroupsSchedule}
-            loadAllSchedules={loadAllSchedules}
+    <>
+      {cashedTime && (
+        <CashedInfo cashedTime={cashedTime} setFavoriteTeachers={setFavoriteTeachers} />
+      )}
+      {errorScannedGroups.length > 0 && (
+        <LoadGroupsAlert
+          errorScannedGroups={errorScannedGroups}
+          scanningGroupsSchedule={scanningGroupsSchedule}
+          loadAllSchedules={loadAllSchedules}
+          groupScannedPercent={groupScannedPercent}
+        />
+      )}
+      <MainForm
+        teachers={teachers}
+        setSelectedTeacher={setSelectedTeacher}
+        setSelectedWeekType={setSelectedWeekType}
+        setSelectedDayOfWeek={setSelectedDayOfWeek}
+        hideEmptyDaysTypes={hideEmptyDaysTypes}
+        hideEmptyRows={hideEmptyRows}
+        hideTimeColumn={hideTimeColumn}
+        setHideEmptyRows={setHideEmptyRows}
+        setHideEmptyDaysTypes={setHideEmptyDaysTypes}
+        setHideTimeColumn={setHideTimeColumn}
+        sortColumnType={sortColumnType}
+        setSortColumnType={setSortColumnType}
+        selectedDayOfWeek={selectedDayOfWeek}
+        selectedWeekType={selectedWeekType}
+        selectedTeacher={selectedTeacher}
+        favoriteTeachers={favoriteTeachers}
+        setFavoriteTeachers={setFavoriteTeachers}
+      />
+      {selectedTeacher && (
+        <>
+          <ScheduleTable
+            hideEmptyRows={hideEmptyRows}
+            tableData={tableData}
+            selectedWeekType={selectedWeekType}
+            selectedDayOfWeek={selectedDayOfWeek}
+            hideEmptyDaysTypes={hideEmptyDaysTypes}
+            hideTimeColumn={hideTimeColumn}
+            sortColumnType={sortColumnType}
+            setSelectedDayOfWeek={setSelectedDayOfWeek}
+            setSelectedWeekType={setSelectedWeekType}
           />
-        )}
-        {!finishedFirstGroupsLoading && !isGroupsLoadedWithError && (
-          <div>
-            <GroupFound
-              groups={groups}
-              scanningGroupsSchedule={scanningGroupsSchedule}
-              loadAllSchedules={loadAllSchedules}
-            />
-          </div>
-        )}
-
-        {isGroupsLoadedWithError && (
-          <ServerErrorAlert isOpenedOnFreeServer={isOpenedOnFreeServer} />
-        )}
-
-        {(scanningGroupsSchedule || finishedFirstGroupsLoading) && groupScannedPercent < 100 && (
-          <LoadingProgressBar
-            groupScannedPercent={groupScannedPercent}
-            scanningGroupsSchedule={scanningGroupsSchedule}
-          />
-        )}
-
-        {finishedFirstGroupsLoading && (
-          <div>
-            <MainForm
-              teachers={teachers}
-              setSelectedTeacher={setSelectedTeacher}
-              setSelectedWeekType={setSelectedWeekType}
-              setSelectedDayOfWeek={setSelectedDayOfWeek}
-              hideEmptyDaysTypes={hideEmptyDaysTypes}
-              hideEmptyRows={hideEmptyRows}
-              hideTimeColumn={hideTimeColumn}
-              setHideEmptyRows={setHideEmptyRows}
-              setHideEmptyDaysTypes={setHideEmptyDaysTypes}
-              setHideTimeColumn={setHideTimeColumn}
-              sortColumnType={sortColumnType}
-              setSortColumnType={setSortColumnType}
-              selectedDayOfWeek={selectedDayOfWeek}
-              selectedWeekType={selectedWeekType}
-              selectedTeacher={selectedTeacher}
-              favoriteTeachers={favoriteTeachers}
-              setFavoriteTeachers={setFavoriteTeachers}
-            />
-          </div>
-        )}
-
-        {finishedFirstGroupsLoading && selectedTeacher && (
-          <div>
-            <ScheduleTable
-              hideEmptyRows={hideEmptyRows}
-              tableData={tableData}
-              selectedWeekType={selectedWeekType}
-              selectedDayOfWeek={selectedDayOfWeek}
-              hideEmptyDaysTypes={hideEmptyDaysTypes}
-              hideTimeColumn={hideTimeColumn}
-              sortColumnType={sortColumnType}
-              setSelectedDayOfWeek={setSelectedDayOfWeek}
-              setSelectedWeekType={setSelectedWeekType}
-            />
-            <ExportSchedule selectedTeacher={selectedTeacher} tableData={tableData} />
-          </div>
-        )}
-      </main>
-    </Spin>
+          <ExportSchedule selectedTeacher={selectedTeacher} tableData={tableData} />
+        </>
+      )}
+    </>
   )
 }

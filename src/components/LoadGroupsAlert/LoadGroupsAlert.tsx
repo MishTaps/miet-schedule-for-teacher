@@ -1,4 +1,5 @@
 import { Alert, Button } from 'antd'
+import { LoadingProgressBar } from '../LoadingProgressBar'
 
 const pr = new Intl.PluralRules('ru-RU')
 function getPlural(count: number) {
@@ -15,28 +16,36 @@ interface LoadGroupsAlert {
   errorScannedGroups: string[]
   scanningGroupsSchedule: boolean
   loadAllSchedules: (value: string[]) => void
+  groupScannedPercent: number
 }
 
 export const LoadGroupsAlert: React.FC<LoadGroupsAlert> = ({
   errorScannedGroups,
   scanningGroupsSchedule,
   loadAllSchedules,
+  groupScannedPercent,
 }) => {
   const errorTextEnding = getPlural(errorScannedGroups.length)
 
   return (
-    <Alert
-      title={`Не удалось загрузить расписание ${errorScannedGroups.length} ${errorTextEnding}. Расписание преподавателя может быть неполное`}
-      banner
-      action={
-        <Button
-          loading={scanningGroupsSchedule}
-          size="small"
-          onClick={() => loadAllSchedules(errorScannedGroups)}
-        >
-          Повторить попытку
-        </Button>
-      }
-    />
+    <>
+      <Alert
+        title={`Не удалось загрузить расписание ${errorScannedGroups.length} ${errorTextEnding}. Расписание преподавателя может быть неполное`}
+        banner
+        action={
+          <Button
+            loading={scanningGroupsSchedule}
+            size="small"
+            onClick={() => loadAllSchedules(errorScannedGroups)}
+          >
+            Повторить попытку
+          </Button>
+        }
+      />
+      <LoadingProgressBar
+        groupScannedPercent={groupScannedPercent}
+        scanningGroupsSchedule={scanningGroupsSchedule}
+      />
+    </>
   )
 }
