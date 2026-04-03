@@ -3,12 +3,11 @@ import { SearchOutlined } from '@ant-design/icons'
 import { LoadingProgressBar } from '../LoadingProgressBar'
 import styles from './GetScheduleButton.module.css'
 import { useLoadingStore } from '@/stores'
+import { useScanGroups } from '@/hooks'
 
-interface GetScheduleButton {
-  loadAllSchedules: (value: string[]) => void
-}
+export const GetScheduleButton = () => {
+  const { loadAllSchedules } = useScanGroups()
 
-export const GetScheduleButton: React.FC<GetScheduleButton> = ({ loadAllSchedules }) => {
   const groups = useLoadingStore((state) => state.groups)
   const isScanningGroups = useLoadingStore((state) => state.isScanningGroups)
 

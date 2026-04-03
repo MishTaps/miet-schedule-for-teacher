@@ -1,19 +1,8 @@
-import {
-  Button,
-  Card,
-  ConfigProvider,
-  DatePicker,
-  Divider,
-  Flex,
-  Form,
-  Tour,
-  type TourProps,
-} from 'antd'
+import { Button, Card, DatePicker, Divider, Flex, Form, Tour, type TourProps } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
 import styles from './ExportSchedule.module.css'
 import { createEvents, type EventAttributes } from 'ics'
 import type { ScheduleRecord } from '@/types'
-import ruRU from 'antd/locale/ru_RU'
 import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ru'
@@ -377,9 +366,7 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ tableData }) => {
             </Button>
           </div>
         </Form.Item>
-        <ConfigProvider locale={ruRU}>
-          <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
-        </ConfigProvider>
+        <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
       </Form>
     </div>
   )

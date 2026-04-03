@@ -1,6 +1,7 @@
 import { Alert, Button } from 'antd'
 import { LoadingProgressBar } from '../LoadingProgressBar'
 import { useLoadingStore } from '@/stores'
+import { useScanGroups } from '@/hooks'
 
 const pr = new Intl.PluralRules('ru-RU')
 function getPlural(count: number) {
@@ -13,11 +14,9 @@ function getPlural(count: number) {
   return forms[rule] || forms.many
 }
 
-interface LoadGroupsAlert {
-  loadAllSchedules: (value: string[]) => void
-}
+export const LoadGroupsAlert = () => {
+  const { loadAllSchedules } = useScanGroups()
 
-export const LoadGroupsAlert: React.FC<LoadGroupsAlert> = ({ loadAllSchedules }) => {
   const isScanningGroups = useLoadingStore((state) => state.isScanningGroups)
   const errorScannedGroups = useLoadingStore((state) => state.errorScannedGroups)
 

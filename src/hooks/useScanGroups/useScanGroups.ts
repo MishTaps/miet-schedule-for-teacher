@@ -1,25 +1,8 @@
 import { GroupsService } from '@/data'
-import { useLoadingStore, useTeachersStore } from '@/stores'
-import type { ScheduleDataItem } from '@/types'
+import { useLessonsStore, useLoadingStore, useTeachersStore } from '@/stores'
 import localforage from 'localforage'
 
-interface ScanGroups {
-  lessons: ScheduleDataItem[]
-  setLessons: (value: ScheduleDataItem[]) => void
-  timeCodes: number[]
-  setTimeCodes: (value: number[]) => void
-  timeRanges: string[]
-  setTimeRanges: (value: string[]) => void
-}
-
-export const useScanGroups = ({
-  lessons,
-  setLessons,
-  timeCodes,
-  setTimeCodes,
-  timeRanges,
-  setTimeRanges,
-}: ScanGroups) => {
+export const useScanGroups = () => {
   const groups = useLoadingStore((state) => state.groups)
   const errorScannedGroups = useLoadingStore((state) => state.errorScannedGroups)
   const scannedGroupsCount = useLoadingStore((state) => state.scannedGroupsCount)
@@ -31,6 +14,13 @@ export const useScanGroups = ({
 
   const teachers = useTeachersStore((state) => state.teachers)
   const setTeachers = useTeachersStore((state) => state.setTeachers)
+
+  const lessons = useLessonsStore((state) => state.lessons)
+  const timeCodes = useLessonsStore((state) => state.timeCodes)
+  const timeRanges = useLessonsStore((state) => state.timeRanges)
+  const setLessons = useLessonsStore((state) => state.setLessons)
+  const setTimeCodes = useLessonsStore((state) => state.setTimeCodes)
+  const setTimeRanges = useLessonsStore((state) => state.setTimeRanges)
 
   const loadAllSchedules = async (groupsToLoad = groups) => {
     let localErrorGroups = [...errorScannedGroups]

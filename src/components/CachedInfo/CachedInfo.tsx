@@ -2,7 +2,7 @@ import { useLoadingStore } from '@/stores'
 import { Alert, Button } from 'antd'
 import localforage from 'localforage'
 
-export const CashedInfo = () => {
+export const CachedInfo = () => {
   const updatedAt = useLoadingStore((state) => state.updatedAt)
 
   if (!updatedAt) return
