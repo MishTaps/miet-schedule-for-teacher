@@ -14,49 +14,18 @@ import {
 import styles from './MainForm.module.css'
 import { useMemo } from 'react'
 import { HeartFilled, HeartOutlined, UserOutlined } from '@ant-design/icons'
-import type { SelectedDayOfWeekType, SelectedWeekType, SortColumnType } from '@/types'
+import type { SelectedDayOfWeekType, SelectedWeekType } from '@/types'
 import localforage from 'localforage'
 import type { DefaultOptionType } from 'antd/es/select'
+import { useFiltrationSettingsStore, useTeachersStore, useVisualSettingsStore } from '@/stores'
 
-interface MainForm {
-  teachers: string[]
-  setSelectedTeacher: (value: string | null) => void
-  setSelectedWeekType: (value: SelectedWeekType) => void
-  setSelectedDayOfWeek: (value: SelectedDayOfWeekType) => void
-  hideEmptyDaysTypes: boolean
-  hideEmptyRows: boolean
-  hideTimeColumn: boolean
-  setHideEmptyDaysTypes: (value: boolean) => void
-  setHideEmptyRows: (value: boolean) => void
-  setHideTimeColumn: (value: boolean) => void
-  setSortColumnType: (value: SortColumnType) => void
-  selectedDayOfWeek: SelectedDayOfWeekType
-  selectedWeekType: SelectedWeekType
-  sortColumnType: SortColumnType
-  selectedTeacher: string | null
-  favoriteTeachers: string[]
-  setFavoriteTeachers: (value: string[]) => void
-}
+export const MainForm = () => {
+  const teachers = useTeachersStore((state) => state.teachers)
+  const selectedTeacher = useTeachersStore((state) => state.selectedTeacher)
+  const favoriteTeachers = useTeachersStore((state) => state.favoriteTeachers)
+  const setSelectedTeacher = useTeachersStore((state) => state.setSelectedTeacher)
+  const setFavoriteTeachers = useTeachersStore((state) => state.setFavoriteTeachers)
 
-export const MainForm: React.FC<MainForm> = ({
-  teachers,
-  setSelectedTeacher,
-  hideEmptyDaysTypes,
-  setHideEmptyDaysTypes,
-  hideEmptyRows,
-  setHideEmptyRows,
-  setSelectedWeekType,
-  setSelectedDayOfWeek,
-  hideTimeColumn,
-  setHideTimeColumn,
-  setSortColumnType,
-  selectedDayOfWeek,
-  selectedWeekType,
-  sortColumnType,
-  selectedTeacher,
-  favoriteTeachers,
-  setFavoriteTeachers,
-}) => {
   const teacherOptions = useMemo<DefaultOptionType[]>(() => {
     if (favoriteTeachers.length === 0) {
       return teachers.map((t) => ({ label: t, value: t }))
@@ -141,52 +110,24 @@ export const MainForm: React.FC<MainForm> = ({
           />
         </Form.Item>
         <Flex wrap="wrap" className={styles.settingsBox}>
-          <div className={styles.settingsBody}>
-            <FiltrationSettings
-              setSelectedWeekType={setSelectedWeekType}
-              setSelectedDayOfWeek={setSelectedDayOfWeek}
-              setSortColumnType={setSortColumnType}
-              selectedDayOfWeek={selectedDayOfWeek}
-              selectedWeekType={selectedWeekType}
-            />
-          </div>
-          <div className={styles.settingsBody}>
-            <VisualSettings
-              hideEmptyDaysTypes={hideEmptyDaysTypes}
-              hideEmptyRows={hideEmptyRows}
-              hideTimeColumn={hideTimeColumn}
-              setHideEmptyDaysTypes={setHideEmptyDaysTypes}
-              setHideEmptyRows={setHideEmptyRows}
-              setHideTimeColumn={setHideTimeColumn}
-              setSortColumnType={setSortColumnType}
-              selectedDayOfWeek={selectedDayOfWeek}
-              selectedWeekType={selectedWeekType}
-              sortColumnType={sortColumnType}
-            />
-          </div>
+          <FiltrationSettings />
+          <VisualSettings />
         </Flex>
       </Form>
     </>
   )
 }
 
-interface FiltrationSettingsProps {
-  setSelectedWeekType: (value: SelectedWeekType) => void
-  setSelectedDayOfWeek: (value: SelectedDayOfWeekType) => void
-  setSortColumnType: (value: SortColumnType) => void
-  selectedDayOfWeek: SelectedDayOfWeekType
-  selectedWeekType: SelectedWeekType
-}
+const FiltrationSettings = () => {
+  const selectedDayOfWeek = useFiltrationSettingsStore((state) => state.selectedDayOfWeek)
+  const selectedWeekType = useFiltrationSettingsStore((state) => state.selectedWeekType)
+  const setSelectedDayOfWeek = useFiltrationSettingsStore((state) => state.setSelectedDayOfWeek)
+  const setSelectedWeekType = useFiltrationSettingsStore((state) => state.setSelectedWeekType)
 
-const FiltrationSettings: React.FC<FiltrationSettingsProps> = ({
-  selectedDayOfWeek,
-  setSelectedDayOfWeek,
-  setSortColumnType,
-  selectedWeekType,
-  setSelectedWeekType,
-}) => {
+  const setSortColumnType = useVisualSettingsStore((state) => state.setSortColumnType)
+
   return (
-    <>
+    <div className={styles.settingsBody}>
       <Divider>Фильтрация</Divider>
       <Form.Item label="Выберите день недели:">
         <Flex>
@@ -242,43 +183,31 @@ const FiltrationSettings: React.FC<FiltrationSettingsProps> = ({
           }}
         />
       </Form.Item>
-    </>
+    </div>
   )
 }
 
-interface VisualSettingsProps {
-  hideEmptyDaysTypes: boolean
-  hideEmptyRows: boolean
-  hideTimeColumn: boolean
-  setHideEmptyDaysTypes: (value: boolean) => void
-  setHideEmptyRows: (value: boolean) => void
-  setHideTimeColumn: (value: boolean) => void
-  setSortColumnType: (value: SortColumnType) => void
-  selectedDayOfWeek: SelectedDayOfWeekType
-  selectedWeekType: SelectedWeekType
-  sortColumnType: SortColumnType
-}
+const VisualSettings = () => {
+  const hideEmptyDaysTypes = useVisualSettingsStore((state) => state.hideEmptyDaysTypes)
+  const hideEmptyRows = useVisualSettingsStore((state) => state.hideEmptyRows)
+  const hideTimeColumn = useVisualSettingsStore((state) => state.hideTimeColumn)
+  const setHideEmptyDaysTypes = useVisualSettingsStore((state) => state.setHideEmptyDaysTypes)
+  const setHideEmptyRows = useVisualSettingsStore((state) => state.setHideEmptyRows)
+  const setHideTimeColumn = useVisualSettingsStore((state) => state.setHideTimeColumn)
+  const sortColumnType = useVisualSettingsStore((state) => state.sortColumnType)
+  const setSortColumnType = useVisualSettingsStore((state) => state.setSortColumnType)
 
-const VisualSettings: React.FC<VisualSettingsProps> = ({
-  selectedDayOfWeek,
-  setSortColumnType,
-  selectedWeekType,
-  sortColumnType,
-  hideEmptyDaysTypes,
-  setHideEmptyDaysTypes,
-  hideEmptyRows,
-  setHideEmptyRows,
-  hideTimeColumn,
-  setHideTimeColumn,
-}) => {
+  const selectedDayOfWeek = useFiltrationSettingsStore((state) => state.selectedDayOfWeek)
+  const selectedWeekType = useFiltrationSettingsStore((state) => state.selectedWeekType)
+
   return (
-    <>
+    <div className={styles.settingsBody}>
       <Divider>Настройки отображения</Divider>
       <Form.Item label="Сортировка по:" name="sortType" initialValue="day">
         <Tooltip
           title={
             selectedDayOfWeek !== 'allDays' || selectedWeekType !== 'allWeekTypes'
-              ? 'Сортировка доступна только при выборе всех дней недели и всех типов недель'
+              ? 'Сортировка доступна только при выключенных фильтрах'
               : undefined
           }
         >
@@ -313,6 +242,6 @@ const VisualSettings: React.FC<VisualSettingsProps> = ({
         <span>Скрыть столбец «Пары»</span>
         <Switch checked={hideTimeColumn} onChange={setHideTimeColumn} />
       </div>
-    </>
+    </div>
   )
 }

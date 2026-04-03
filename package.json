@@ -17,7 +17,8 @@
     "ics": "^3.8.1",
     "localforage": "^1.10.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

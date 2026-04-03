@@ -1,5 +1,6 @@
 import { Alert, Button } from 'antd'
 import { LoadingProgressBar } from '../LoadingProgressBar'
+import { useLoadingStore } from '@/stores'
 
 const pr = new Intl.PluralRules('ru-RU')
 function getPlural(count: number) {
@@ -13,18 +14,15 @@ function getPlural(count: number) {
 }
 
 interface LoadGroupsAlert {
-  errorScannedGroups: string[]
-  scanningGroupsSchedule: boolean
   loadAllSchedules: (value: string[]) => void
-  groupScannedPercent: number
 }
 
-export const LoadGroupsAlert: React.FC<LoadGroupsAlert> = ({
-  errorScannedGroups,
-  scanningGroupsSchedule,
-  loadAllSchedules,
-  groupScannedPercent,
-}) => {
+export const LoadGroupsAlert: React.FC<LoadGroupsAlert> = ({ loadAllSchedules }) => {
+  const isScanningGroups = useLoadingStore((state) => state.isScanningGroups)
+  const errorScannedGroups = useLoadingStore((state) => state.errorScannedGroups)
+
+  if (!errorScannedGroups.length) return
+
   const errorTextEnding = getPlural(errorScannedGroups.length)
 
   return (
@@ -34,7 +32,7 @@ export const LoadGroupsAlert: React.FC<LoadGroupsAlert> = ({
         banner
         action={
           <Button
-            loading={scanningGroupsSchedule}
+            loading={isScanningGroups}
             size="small"
             onClick={() => loadAllSchedules(errorScannedGroups)}
           >
@@ -42,10 +40,7 @@ export const LoadGroupsAlert: React.FC<LoadGroupsAlert> = ({
           </Button>
         }
       />
-      <LoadingProgressBar
-        groupScannedPercent={groupScannedPercent}
-        scanningGroupsSchedule={scanningGroupsSchedule}
-      />
+      <LoadingProgressBar />
     </>
   )
 }

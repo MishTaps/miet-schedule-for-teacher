@@ -1,5 +1,5 @@
-import { message, Spin } from 'antd'
-import { useCallback, useEffect, useState } from 'react'
+import { Spin } from 'antd'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import localforage from 'localforage'
 
 import { defaultTableData } from './tableConfig/defaultTableData'
@@ -14,191 +14,44 @@ import {
   ServerErrorAlert,
 } from '@/components'
 import { GroupsService } from '@/data'
-import type {
-  ScheduleDataItem,
-  ScheduleRecord,
-  SelectedDayOfWeekType,
-  SelectedWeekType,
-  SortColumnType,
-  WeekTypes,
-} from '@/types'
+import type { ScheduleDataItem, ScheduleRecord, WeekTypes } from '@/types'
+import { useLoadingStore, useTeachersStore, useVisualSettingsStore } from '@/stores'
 
 export const MainWorkplace = () => {
-  const isOpenedOnPhone = window.innerWidth < 576
+  const hideTimeColumn = useVisualSettingsStore((state) => state.hideTimeColumn)
 
-  const params = new URLSearchParams(window.location.search)
-  const paramTeacher = params.get('teacher')
+  const groups = useLoadingStore((state) => state.groups)
+  const errorScannedGroups = useLoadingStore((state) => state.errorScannedGroups)
+  const scannedGroupsCount = useLoadingStore((state) => state.scannedGroupsCount)
+  const isGroupsScanned = useLoadingStore((state) => state.isGroupsScanned)
+  const isGetGroupsError = useLoadingStore((state) => state.isGetGroupsError)
+  const isGetGroups = useLoadingStore((state) => state.isGetGroups)
+  const setIsScanningGroups = useLoadingStore((state) => state.setIsScanningGroups)
+  const setScannedGroupsCount = useLoadingStore((state) => state.setScannedGroupsCount)
+  const setErrorScannedGroups = useLoadingStore((state) => state.setErrorScannedGroups)
+  const setIsGroupsScanned = useLoadingStore((state) => state.setIsGroupsScanned)
+  const setGroups = useLoadingStore((state) => state.setGroups)
+  const setIsGetGroups = useLoadingStore((state) => state.setIsGetGroups)
+  const setIsGetGroupsError = useLoadingStore((state) => state.setIsGetGroupsError)
+  const setUpdatedAt = useLoadingStore((state) => state.setUpdatedAt)
 
-  const [groups, setGroups] = useState<string[]>([])
-  const [loadingGroups, setLoadingGroups] = useState(true)
-  const [finishedFirstGroupsLoading, setFinishedFirstGroupsLoading] = useState<boolean | null>(null)
-  const [isGroupsLoadedWithError, setIsGroupsLoadedWithError] = useState(false)
-  const [scanningGroupsSchedule, setScanningAGroupsSchedule] = useState(false)
+  const teachers = useTeachersStore((state) => state.teachers)
+  const selectedTeacher = useTeachersStore((state) => state.selectedTeacher)
+  const setTeachers = useTeachersStore((state) => state.setTeachers)
+  const setFavoriteTeachers = useTeachersStore((state) => state.setFavoriteTeachers)
 
-  const [scannedGroups, setScannedGroups] = useState(0)
-  const groupScannedPercent = Math.round((scannedGroups / (groups.length || 1)) * 100)
-  const [errorScannedGroups, setErrorScannedGroups] = useState<string[]>([])
-
-  const [allLessons, setAllLessons] = useState<ScheduleDataItem[]>([])
-  const [teachers, setTeachers] = useState<string[]>([])
-  const [selectedTeacher, setSelectedTeacher] = useState<string | null>(paramTeacher ?? null)
-  const [favoriteTeachers, setFavoriteTeachers] = useState<string[]>([])
-  const [selectedDayOfWeek, setSelectedDayOfWeek] = useState<SelectedDayOfWeekType>('allDays')
-  const [selectedWeekType, setSelectedWeekType] = useState<SelectedWeekType>('allWeekTypes')
-
-  const [tableData, setTableData] = useState<ScheduleRecord[]>(defaultTableData)
-  const [sortColumnType, setSortColumnType] = useState<SortColumnType>('day')
-  const [hideEmptyDaysTypes, setHideEmptyDaysTypes] = useState(true)
-  const [hideEmptyRows, setHideEmptyRows] = useState(true)
-  const [hideTimeColumn, setHideTimeColumn] = useState(isOpenedOnPhone)
-
+  const [lessons, setLessons] = useState<ScheduleDataItem[]>([])
   const [timeCodes, setTimeCodes] = useState<number[]>([])
   const [timeRanges, setTimeRanges] = useState<string[]>([])
 
-  const [cashedTime, setCashedTime] = useState<number>()
+  const tableData = useMemo(() => {
+    if (!selectedTeacher) return defaultTableData
 
-  const loadAllSchedules = async (groupsToLoad = groups) => {
-    let localErrorGroups = [...errorScannedGroups]
-    let localScannedGroups = scannedGroups
-    const localTimeCodes: number[] = timeCodes
-    const localTimeRanges: string[] = timeRanges
-
-    setScanningAGroupsSchedule(true)
-    if (errorScannedGroups.length == 0) {
-      setScannedGroups(0)
-      localScannedGroups = 0
-    } else {
-      setScannedGroups(groups.length - errorScannedGroups.length)
-      localScannedGroups = groups.length - errorScannedGroups.length
-    }
-
-    const BATCH_SIZE = 10
-    const lessons = [...allLessons]
-    const teachersSet = new Set(teachers)
-
-    for (let i = 0; i < groupsToLoad.length; i += BATCH_SIZE) {
-      const batch = groupsToLoad.slice(i, i + BATCH_SIZE)
-
-      await Promise.all(
-        batch.map(async (group) => {
-          try {
-            const res = await GroupsService.getScheduleForGroup(group)
-            setScannedGroups((p) => p + 1)
-            localScannedGroups += 1
-
-            if (!res?.Data) return
-
-            res.Data.forEach((lesson) => {
-              lessons.push(lesson)
-
-              if (lesson.Class?.TeacherFull) {
-                teachersSet.add(lesson.Class.TeacherFull)
-              }
-            })
-
-            if (errorScannedGroups.includes(group)) {
-              localErrorGroups = localErrorGroups.filter((item) => item !== group)
-            }
-            if (i == 0) {
-              res.Times.forEach((time) => {
-                localTimeCodes.push(time.Code)
-                localTimeRanges.push(`${time.TimeFrom} - ${time.TimeTo}`)
-              })
-            }
-          } catch {
-            message.error(`Ошибка загрузки группы: ${group}`)
-            localErrorGroups.push(group)
-          }
-        }),
-      )
-    }
-
-    const localCashedTime = Date.now()
-    setAllLessons(lessons)
-    setTeachers(Array.from(teachersSet).sort())
-    setErrorScannedGroups(localErrorGroups)
-    setScannedGroups(localScannedGroups)
-    setTimeCodes(localTimeCodes)
-    setTimeRanges(localTimeRanges)
-    setCashedTime(localCashedTime)
-
-    await localforage.setItem('schedule_cache', {
-      allLessons: lessons,
-      teachers: Array.from(teachersSet).sort(),
-      scannedGroups: localScannedGroups,
-      errorScannedGroups: localErrorGroups,
-      groups: groups,
-      timeCodes: localTimeCodes,
-      timeRanges: localTimeRanges,
-      cachedAt: localCashedTime,
-    })
-
-    setScanningAGroupsSchedule(false)
-    setFinishedFirstGroupsLoading(true)
-  }
-
-  const loadScheduleCache = async () => {
-    try {
-      const cached = (await localforage.getItem('schedule_cache')) as {
-        allLessons: ScheduleDataItem[]
-        teachers: string[]
-        groups: string[]
-        timeCodes: number[]
-        timeRanges: string[]
-        scannedGroups: number
-        errorScannedGroups: string[]
-        cachedAt: number
-        favoriteTeachers?: string[]
-      } | null
-      if (cached) {
-        setCashedTime(cached.cachedAt)
-        setAllLessons(cached.allLessons)
-        setTeachers(cached.teachers)
-        setGroups(cached.groups)
-        setScannedGroups(cached.scannedGroups)
-        setErrorScannedGroups(cached.errorScannedGroups)
-        setFinishedFirstGroupsLoading(true)
-        setLoadingGroups(false)
-        setTimeCodes(cached.timeCodes)
-        setTimeRanges(cached.timeRanges)
-      } else {
-        setFinishedFirstGroupsLoading(false)
-      }
-    } catch (e) {
-      console.error('Ошибка чтения schedule_cache в кэше', e)
-    }
-  }
-
-  const loadPersonalDataCache = async () => {
-    try {
-      const cached = (await localforage.getItem('personal_data')) as {
-        favoriteTeachers: string[]
-      } | null
-      if (cached) {
-        setFavoriteTeachers(cached.favoriteTeachers)
-      }
-    } catch (e) {
-      console.error('Ошибка чтения personal_data в кэше', e)
-    }
-  }
-
-  const fetchGroups = async () => {
-    try {
-      const groupsData = await GroupsService.getGroups()
-      setGroups(groupsData)
-    } catch {
-      setIsGroupsLoadedWithError(true)
-    } finally {
-      setLoadingGroups(false)
-    }
-  }
-
-  const buildScheduleForTeacher = useCallback(
-    (teacher: string) => {
+    const buildScheduleForTeacher = () => {
       const updatedData: ScheduleRecord[] = structuredClone(defaultTableData)
 
-      allLessons
-        .filter((l) => l.Class?.TeacherFull === teacher)
+      lessons
+        .filter((l) => l.Class?.TeacherFull === selectedTeacher)
         .forEach((lesson) => {
           const timeIndex = lesson.Time.Code - 1
           const dayKey = `day${lesson.Day}`
@@ -284,91 +137,188 @@ export const MainWorkplace = () => {
             },
           }
         })
-      setTableData(updatedData)
-    },
-    [allLessons, hideTimeColumn, timeCodes, timeRanges],
-  )
+
+      return updatedData
+    }
+
+    return buildScheduleForTeacher()
+  }, [hideTimeColumn, lessons, selectedTeacher, timeCodes, timeRanges])
+
+  const loadAllSchedules = async (groupsToLoad = groups) => {
+    let localErrorGroups = [...errorScannedGroups]
+    let localScannedGroups = scannedGroupsCount
+    const localTimeCodes: number[] = timeCodes
+    const localTimeRanges: string[] = timeRanges
+
+    setIsScanningGroups(true)
+    if (errorScannedGroups.length == 0) {
+      setScannedGroupsCount(0)
+      localScannedGroups = 0
+    } else {
+      setScannedGroupsCount(groups.length - errorScannedGroups.length)
+      localScannedGroups = groups.length - errorScannedGroups.length
+    }
+
+    const BATCH_SIZE = 10
+    const loadedLessons = [...lessons]
+    const teachersSet = new Set(teachers)
+
+    for (let i = 0; i < groupsToLoad.length; i += BATCH_SIZE) {
+      const batch = groupsToLoad.slice(i, i + BATCH_SIZE)
+
+      await Promise.all(
+        batch.map(async (group) => {
+          try {
+            const res = await GroupsService.getScheduleForGroup(group)
+            localScannedGroups += 1
+            setScannedGroupsCount(localScannedGroups)
+
+            if (!res?.Data) return
+
+            res.Data.forEach((lesson) => {
+              loadedLessons.push(lesson)
+
+              if (lesson.Class?.TeacherFull) {
+                teachersSet.add(lesson.Class.TeacherFull)
+              }
+            })
+
+            if (errorScannedGroups.includes(group)) {
+              localErrorGroups = localErrorGroups.filter((item) => item !== group)
+            }
+            if (i == 0) {
+              res.Times.forEach((time) => {
+                localTimeCodes.push(time.Code)
+                localTimeRanges.push(`${time.TimeFrom} - ${time.TimeTo}`)
+              })
+            }
+          } catch {
+            localErrorGroups.push(group)
+          }
+        }),
+      )
+    }
+
+    const localUpdatedAt = Date.now()
+    setLessons(loadedLessons)
+    setTeachers(Array.from(teachersSet).sort())
+    setErrorScannedGroups(localErrorGroups)
+    setScannedGroupsCount(localScannedGroups)
+    setTimeCodes(localTimeCodes)
+    setTimeRanges(localTimeRanges)
+    setUpdatedAt(localUpdatedAt)
+
+    await localforage.setItem('schedule_cache', {
+      allLessons: loadedLessons,
+      teachers: Array.from(teachersSet).sort(),
+      scannedGroups: localScannedGroups,
+      errorScannedGroups: localErrorGroups,
+      groups: groups,
+      timeCodes: localTimeCodes,
+      timeRanges: localTimeRanges,
+      cachedAt: localUpdatedAt,
+    })
+
+    setIsScanningGroups(false)
+    setIsGroupsScanned(true)
+  }
+
+  const fetchGroups = useCallback(async () => {
+    try {
+      const groupsData = await GroupsService.getGroups()
+      setGroups(groupsData)
+    } catch {
+      setIsGetGroupsError(true)
+    } finally {
+      setIsGetGroups(false)
+    }
+  }, [setGroups, setIsGetGroups, setIsGetGroupsError])
+
+  useEffect(() => {
+    if (isGroupsScanned === false) {
+      fetchGroups()
+    }
+  }, [fetchGroups, isGroupsScanned])
+
+  const loadScheduleCache = useCallback(async () => {
+    try {
+      const cached = (await localforage.getItem('schedule_cache')) as {
+        allLessons: ScheduleDataItem[]
+        teachers: string[]
+        groups: string[]
+        timeCodes: number[]
+        timeRanges: string[]
+        scannedGroups: number
+        errorScannedGroups: string[]
+        cachedAt: number
+        favoriteTeachers?: string[]
+      } | null
+      if (cached) {
+        setUpdatedAt(cached.cachedAt)
+        setLessons(cached.allLessons)
+        setTeachers(cached.teachers)
+        setGroups(cached.groups)
+        setScannedGroupsCount(cached.scannedGroups)
+        setErrorScannedGroups(cached.errorScannedGroups)
+        setIsGroupsScanned(true)
+        setIsGetGroups(false)
+        setTimeCodes(cached.timeCodes)
+        setTimeRanges(cached.timeRanges)
+      } else {
+        setIsGroupsScanned(false)
+      }
+    } catch (e) {
+      console.error('Ошибка чтения schedule_cache в кэше', e)
+    }
+  }, [
+    setErrorScannedGroups,
+    setGroups,
+    setIsGetGroups,
+    setIsGroupsScanned,
+    setScannedGroupsCount,
+    setTeachers,
+    setUpdatedAt,
+  ])
+
+  const loadPersonalDataCache = useCallback(async () => {
+    try {
+      const cached = (await localforage.getItem('personal_data')) as {
+        favoriteTeachers: string[]
+      } | null
+      if (cached) {
+        setFavoriteTeachers(cached.favoriteTeachers)
+      }
+    } catch (e) {
+      console.error('Ошибка чтения personal_data в кэше', e)
+    }
+  }, [setFavoriteTeachers])
 
   useEffect(() => {
     loadScheduleCache()
     loadPersonalDataCache()
-  }, [])
+  }, [loadPersonalDataCache, loadScheduleCache])
 
-  useEffect(() => {
-    if (finishedFirstGroupsLoading === false) {
-      fetchGroups()
-    }
-  }, [finishedFirstGroupsLoading])
-
-  useEffect(() => {
-    if (selectedTeacher) {
-      buildScheduleForTeacher(selectedTeacher)
-    }
-  }, [buildScheduleForTeacher, selectedTeacher])
-
-  if (isGroupsLoadedWithError) {
+  if (isGetGroupsError) {
     return <ServerErrorAlert />
   }
 
-  if (!finishedFirstGroupsLoading) {
+  if (!isGroupsScanned) {
     return (
-      <Spin spinning={loadingGroups} tip="Получение списка групп...">
-        <GetScheduleButton
-          groups={groups}
-          scanningGroupsSchedule={scanningGroupsSchedule}
-          loadAllSchedules={loadAllSchedules}
-          groupScannedPercent={groupScannedPercent}
-        />
+      <Spin spinning={isGetGroups} tip="Загрузка...">
+        <GetScheduleButton loadAllSchedules={loadAllSchedules} />
       </Spin>
     )
   }
 
   return (
     <>
-      {cashedTime && (
-        <CashedInfo cashedTime={cashedTime} setFavoriteTeachers={setFavoriteTeachers} />
-      )}
-      {errorScannedGroups.length > 0 && (
-        <LoadGroupsAlert
-          errorScannedGroups={errorScannedGroups}
-          scanningGroupsSchedule={scanningGroupsSchedule}
-          loadAllSchedules={loadAllSchedules}
-          groupScannedPercent={groupScannedPercent}
-        />
-      )}
-      <MainForm
-        teachers={teachers}
-        setSelectedTeacher={setSelectedTeacher}
-        setSelectedWeekType={setSelectedWeekType}
-        setSelectedDayOfWeek={setSelectedDayOfWeek}
-        hideEmptyDaysTypes={hideEmptyDaysTypes}
-        hideEmptyRows={hideEmptyRows}
-        hideTimeColumn={hideTimeColumn}
-        setHideEmptyRows={setHideEmptyRows}
-        setHideEmptyDaysTypes={setHideEmptyDaysTypes}
-        setHideTimeColumn={setHideTimeColumn}
-        sortColumnType={sortColumnType}
-        setSortColumnType={setSortColumnType}
-        selectedDayOfWeek={selectedDayOfWeek}
-        selectedWeekType={selectedWeekType}
-        selectedTeacher={selectedTeacher}
-        favoriteTeachers={favoriteTeachers}
-        setFavoriteTeachers={setFavoriteTeachers}
-      />
+      <CashedInfo />
+      <LoadGroupsAlert loadAllSchedules={loadAllSchedules} />
+      <MainForm />
       {selectedTeacher && (
         <>
-          <ScheduleTable
-            hideEmptyRows={hideEmptyRows}
-            tableData={tableData}
-            selectedWeekType={selectedWeekType}
-            selectedDayOfWeek={selectedDayOfWeek}
-            hideEmptyDaysTypes={hideEmptyDaysTypes}
-            hideTimeColumn={hideTimeColumn}
-            sortColumnType={sortColumnType}
-            setSelectedDayOfWeek={setSelectedDayOfWeek}
-            setSelectedWeekType={setSelectedWeekType}
-          />
-          <ExportSchedule selectedTeacher={selectedTeacher} tableData={tableData} />
+          <ScheduleTable tableData={tableData} />
+          <ExportSchedule tableData={tableData} />
         </>
       )}
     </>

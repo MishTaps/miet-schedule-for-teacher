@@ -2,20 +2,16 @@ import { Button, Divider, Row, Col } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { LoadingProgressBar } from '../LoadingProgressBar'
 import styles from './GetScheduleButton.module.css'
+import { useLoadingStore } from '@/stores'
 
 interface GetScheduleButton {
-  groups: string[]
-  scanningGroupsSchedule: boolean
-  groupScannedPercent: number
   loadAllSchedules: (value: string[]) => void
 }
 
-export const GetScheduleButton: React.FC<GetScheduleButton> = ({
-  groups,
-  scanningGroupsSchedule,
-  loadAllSchedules,
-  groupScannedPercent,
-}) => {
+export const GetScheduleButton: React.FC<GetScheduleButton> = ({ loadAllSchedules }) => {
+  const groups = useLoadingStore((state) => state.groups)
+  const isScanningGroups = useLoadingStore((state) => state.isScanningGroups)
+
   return (
     <>
       <Row justify="center" align="middle" className={styles.body}>
@@ -24,7 +20,7 @@ export const GetScheduleButton: React.FC<GetScheduleButton> = ({
           <Button
             type="primary"
             block
-            loading={scanningGroupsSchedule}
+            loading={isScanningGroups}
             onClick={() => loadAllSchedules(groups)}
             icon={<SearchOutlined />}
           >
@@ -32,12 +28,7 @@ export const GetScheduleButton: React.FC<GetScheduleButton> = ({
           </Button>
         </Col>
       </Row>
-      {scanningGroupsSchedule && (
-        <LoadingProgressBar
-          groupScannedPercent={groupScannedPercent}
-          scanningGroupsSchedule={scanningGroupsSchedule}
-        />
-      )}
+      {isScanningGroups && <LoadingProgressBar />}
     </>
   )
 }

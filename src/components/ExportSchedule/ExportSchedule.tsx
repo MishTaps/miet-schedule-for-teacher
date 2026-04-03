@@ -18,9 +18,9 @@ import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ru'
 import { useRef, useState } from 'react'
+import { useTeachersStore } from '@/stores'
 
 interface ExportSchedule {
-  selectedTeacher: string
   tableData: ScheduleRecord[]
 }
 
@@ -45,7 +45,9 @@ type ParsedLesson = {
   groups: string
 }
 
-export const ExportSchedule: React.FC<ExportSchedule> = ({ selectedTeacher, tableData }) => {
+export const ExportSchedule: React.FC<ExportSchedule> = ({ tableData }) => {
+  const selectedTeacher = useTeachersStore((state) => state.selectedTeacher)
+
   dayjs.locale('ru')
   const [startWeek, setStartWeek] = useState<Dayjs | null>(null)
   const [endWeek, setEndWeek] = useState<Dayjs | null>(null)

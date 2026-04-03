@@ -1,13 +1,13 @@
+import { useLoadingStore } from '@/stores'
 import { Alert, Button } from 'antd'
 import localforage from 'localforage'
 
-interface CashedInfo {
-  cashedTime: number
-  setFavoriteTeachers: (value: string[]) => void
-}
+export const CashedInfo = () => {
+  const updatedAt = useLoadingStore((state) => state.updatedAt)
 
-export const CashedInfo: React.FC<CashedInfo> = ({ cashedTime }) => {
-  const formattedDate = new Date(cashedTime).toLocaleDateString('ru-RU', {
+  if (!updatedAt) return
+
+  const formattedDate = new Date(updatedAt).toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -25,7 +25,7 @@ export const CashedInfo: React.FC<CashedInfo> = ({ cashedTime }) => {
   )
 
   const day = 1000 * 60 * 60 * 24
-  if (Date.now() - cashedTime < day) {
+  if (Date.now() - updatedAt < day) {
     return (
       <Alert
         title={`Расписание загружено ${formattedDate}`}
@@ -38,7 +38,7 @@ export const CashedInfo: React.FC<CashedInfo> = ({ cashedTime }) => {
   }
 
   const week = day * 7
-  if (Date.now() - cashedTime < week) {
+  if (Date.now() - updatedAt < week) {
     return (
       <Alert
         title={`Расписание загружено более суток назад: ${formattedDate}`}
@@ -51,7 +51,7 @@ export const CashedInfo: React.FC<CashedInfo> = ({ cashedTime }) => {
   }
 
   const month = day * 30
-  if (Date.now() - cashedTime < month) {
+  if (Date.now() - updatedAt < month) {
     return (
       <Alert
         title={`Расписание загружено более недели назад: ${formattedDate}`}
@@ -64,7 +64,7 @@ export const CashedInfo: React.FC<CashedInfo> = ({ cashedTime }) => {
   }
 
   const halfOfYear = month * 6
-  if (Date.now() - cashedTime < halfOfYear) {
+  if (Date.now() - updatedAt < halfOfYear) {
     return (
       <Alert
         title={`Расписание загружено более месяца назад: ${formattedDate}`}

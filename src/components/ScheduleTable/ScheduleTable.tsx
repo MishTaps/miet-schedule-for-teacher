@@ -2,31 +2,24 @@ import { Button, Divider, Empty, message, Table } from 'antd'
 import { useMemo } from 'react'
 import type { ColumnType } from 'antd/es/table'
 import { columnsConfigDays, columnsConfigWeeks } from '../MainWorkplace/tableConfig/columnsConfig'
-import type { ScheduleRecord, SelectedDayOfWeekType, SelectedWeekType, WeekTypes } from '@/types'
+import type { ScheduleRecord, WeekTypes } from '@/types'
+import { useFiltrationSettingsStore, useVisualSettingsStore } from '@/stores'
 
 interface ScheduleTable {
-  hideEmptyRows: boolean
   tableData: ScheduleRecord[]
-  selectedWeekType: string
-  selectedDayOfWeek: string
-  hideEmptyDaysTypes: boolean
-  hideTimeColumn: boolean
-  sortColumnType: string
-  setSelectedDayOfWeek: (value: SelectedDayOfWeekType) => void
-  setSelectedWeekType: (value: SelectedWeekType) => void
 }
 
-export const ScheduleTable: React.FC<ScheduleTable> = ({
-  hideEmptyRows,
-  tableData,
-  selectedWeekType,
-  selectedDayOfWeek,
-  hideEmptyDaysTypes,
-  hideTimeColumn,
-  sortColumnType,
-  setSelectedDayOfWeek,
-  setSelectedWeekType,
-}) => {
+export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
+  const hideEmptyDaysTypes = useVisualSettingsStore((state) => state.hideEmptyDaysTypes)
+  const hideEmptyRows = useVisualSettingsStore((state) => state.hideEmptyRows)
+  const hideTimeColumn = useVisualSettingsStore((state) => state.hideTimeColumn)
+  const sortColumnType = useVisualSettingsStore((state) => state.sortColumnType)
+
+  const selectedDayOfWeek = useFiltrationSettingsStore((state) => state.selectedDayOfWeek)
+  const selectedWeekType = useFiltrationSettingsStore((state) => state.selectedWeekType)
+  const setSelectedDayOfWeek = useFiltrationSettingsStore((state) => state.setSelectedDayOfWeek)
+  const setSelectedWeekType = useFiltrationSettingsStore((state) => state.setSelectedWeekType)
+
   const columnsConfig = sortColumnType == 'day' ? columnsConfigDays : columnsConfigWeeks
 
   const visibleColumns = useMemo(() => {
