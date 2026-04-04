@@ -1,6 +1,7 @@
 import { useLessonsStore, useTeachersStore, useLoadingStore } from '@/stores'
 import type { ScheduleDataItem } from '@/types'
 import localforage from 'localforage'
+import { useCallback, useEffect } from 'react'
 
 export const useLoadCache = () => {
   const setLessons = useLessonsStore((state) => state.setLessons)
@@ -17,7 +18,7 @@ export const useLoadCache = () => {
   const setIsGetGroups = useLoadingStore((state) => state.setIsGetGroups)
   const setUpdatedAt = useLoadingStore((state) => state.setUpdatedAt)
 
-  const loadScheduleCache = async () => {
+  const loadScheduleCache = useCallback(async () => {
     try {
       const cached = (await localforage.getItem('schedule_cache')) as {
         allLessons: ScheduleDataItem[]
@@ -47,9 +48,20 @@ export const useLoadCache = () => {
     } catch (e) {
       console.error('Ошибка чтения schedule_cache в кэше', e)
     }
-  }
+  }, [
+    setUpdatedAt,
+    setLessons,
+    setTeachers,
+    setGroups,
+    setScannedGroupsCount,
+    setErrorScannedGroups,
+    setIsGroupsScanned,
+    setIsGetGroups,
+    setTimeCodes,
+    setTimeRanges,
+  ])
 
-  const loadPersonalDataCache = async () => {
+  const loadPersonalDataCache = useCallback(async () => {
     try {
       const cached = (await localforage.getItem('personal_data')) as {
         favoriteTeachers: string[]
@@ -60,7 +72,12 @@ export const useLoadCache = () => {
     } catch (e) {
       console.error('Ошибка чтения personal_data в кэше', e)
     }
-  }
+  }, [setFavoriteTeachers])
+
+  useEffect(() => {
+    loadScheduleCache()
+    loadPersonalDataCache()
+  }, [loadPersonalDataCache, loadScheduleCache])
 
   return { loadScheduleCache, loadPersonalDataCache }
 }

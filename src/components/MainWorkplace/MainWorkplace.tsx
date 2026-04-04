@@ -1,5 +1,5 @@
 import { Spin } from 'antd'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { defaultTableData } from './tableConfig/defaultTableData'
 
@@ -12,7 +12,6 @@ import {
   ScheduleTable,
   ServerErrorAlert,
 } from '@/components'
-import { GroupsService } from '@/data'
 import {
   useLessonsStore,
   useLoadingStore,
@@ -20,7 +19,7 @@ import {
   useVisualSettingsStore,
 } from '@/stores'
 import { buildScheduleForTeacher } from '@/utils'
-import { useLoadCache } from '@/hooks'
+import { useFetchGroups, useLoadCache } from '@/hooks'
 
 export const MainWorkplace = () => {
   const hideTimeColumn = useVisualSettingsStore((state) => state.hideTimeColumn)
@@ -34,9 +33,6 @@ export const MainWorkplace = () => {
   const isGroupsScanned = useLoadingStore((state) => state.isGroupsScanned)
   const isGetGroupsError = useLoadingStore((state) => state.isGetGroupsError)
   const isGetGroups = useLoadingStore((state) => state.isGetGroups)
-  const setGroups = useLoadingStore((state) => state.setGroups)
-  const setIsGetGroups = useLoadingStore((state) => state.setIsGetGroups)
-  const setIsGetGroupsError = useLoadingStore((state) => state.setIsGetGroupsError)
 
   const tableData = useMemo(() => {
     if (!selectedTeacher) return defaultTableData
@@ -50,29 +46,8 @@ export const MainWorkplace = () => {
     })
   }, [hideTimeColumn, lessons, selectedTeacher, timeCodes, timeRanges])
 
-  useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        const groupsData = await GroupsService.getGroups()
-        setGroups(groupsData)
-      } catch {
-        setIsGetGroupsError(true)
-      } finally {
-        setIsGetGroups(false)
-      }
-    }
-
-    if (isGroupsScanned === false) {
-      fetchGroups()
-    }
-  }, [isGroupsScanned, setGroups, setIsGetGroups, setIsGetGroupsError])
-
-  const { loadScheduleCache, loadPersonalDataCache } = useLoadCache()
-
-  useEffect(() => {
-    loadScheduleCache()
-    loadPersonalDataCache()
-  }, [loadPersonalDataCache, loadScheduleCache])
+  useFetchGroups()
+  useLoadCache()
 
   if (isGetGroupsError) {
     return <ServerErrorAlert />
