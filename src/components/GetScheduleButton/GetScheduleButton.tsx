@@ -1,9 +1,9 @@
 import { Button, Divider, Row, Col } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
-import { LoadingProgressBar } from '../LoadingProgressBar'
 import styles from './GetScheduleButton.module.css'
 import { useLoadingStore } from '@/stores'
 import { useScanGroups } from '@/hooks'
+import { LoadingProgressBar } from '@/components'
 
 export const GetScheduleButton = () => {
   const { loadAllSchedules } = useScanGroups()

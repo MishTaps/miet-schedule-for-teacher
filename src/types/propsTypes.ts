@@ -7,4 +7,4 @@ export type SelectedWeekType =
 
 export type SelectedDayOfWeekType = 'day1' | 'day2' | 'day3' | 'day4' | 'day5' | 'day6' | 'allDays'
 
-export type SortColumnType = 'day' | 'type'
+export type SortColumnType = 'day' | 'week'

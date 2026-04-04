@@ -1,0 +1,12 @@
+.settingsBody {
+    flex: 1 1 500px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.switch {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}

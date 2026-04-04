@@ -7,7 +7,7 @@ export const LoadingProgressBar = () => {
   const scannedGroupsCount = useLoadingStore((state) => state.scannedGroupsCount)
   const isScanningGroups = useLoadingStore((state) => state.isScanningGroups)
 
-  const scannedGroupsPercent = Math.round((scannedGroupsCount / (groups.length || 1)) * 100)
+  const scannedGroupsPercent = Math.round((scannedGroupsCount / groups.length) * 100)
 
   return (
     <Progress

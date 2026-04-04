@@ -7,6 +7,8 @@ export const CachedInfo = () => {
 
   if (!updatedAt) return
 
+  const diff = Date.now() - updatedAt
+
   const formattedDate = new Date(updatedAt).toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'long',
@@ -25,7 +27,7 @@ export const CachedInfo = () => {
   )
 
   const day = 1000 * 60 * 60 * 24
-  if (Date.now() - updatedAt < day) {
+  if (diff < day) {
     return (
       <Alert
         title={`Расписание загружено ${formattedDate}`}
@@ -38,7 +40,7 @@ export const CachedInfo = () => {
   }
 
   const week = day * 7
-  if (Date.now() - updatedAt < week) {
+  if (diff < week) {
     return (
       <Alert
         title={`Расписание загружено более суток назад: ${formattedDate}`}
@@ -51,7 +53,7 @@ export const CachedInfo = () => {
   }
 
   const month = day * 30
-  if (Date.now() - updatedAt < month) {
+  if (diff < month) {
     return (
       <Alert
         title={`Расписание загружено более недели назад: ${formattedDate}`}
@@ -64,7 +66,7 @@ export const CachedInfo = () => {
   }
 
   const halfOfYear = month * 6
-  if (Date.now() - updatedAt < halfOfYear) {
+  if (diff < halfOfYear) {
     return (
       <Alert
         title={`Расписание загружено более месяца назад: ${formattedDate}`}

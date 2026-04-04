@@ -1,7 +1,7 @@
 import { Alert, Button } from 'antd'
-import { LoadingProgressBar } from '../LoadingProgressBar'
 import { useLoadingStore } from '@/stores'
 import { useScanGroups } from '@/hooks'
+import { LoadingProgressBar } from '@/components'
 
 const pr = new Intl.PluralRules('ru-RU')
 function getPlural(count: number) {
@@ -27,7 +27,7 @@ export const LoadGroupsAlert = () => {
   return (
     <>
       <Alert
-        title={`Не удалось загрузить расписание ${errorScannedGroups.length} ${errorTextEnding}. Расписание преподавателя может быть неполное`}
+        title={`Не удалось загрузить расписание ${errorScannedGroups.length} ${errorTextEnding}. Расписание преподавателя может быть неполное.`}
         banner
         action={
           <Button
