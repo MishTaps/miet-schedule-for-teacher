@@ -18,7 +18,7 @@ import {
   useTeachersStore,
   useVisualSettingsStore,
 } from '@/stores'
-import { buildScheduleForTeacher } from '@/utils'
+import { buildTableForTeacher } from '@/utils'
 import { useFetchGroups, useLoadCache } from '@/hooks'
 
 export const MainWorkplace = () => {
@@ -37,7 +37,7 @@ export const MainWorkplace = () => {
   const tableData = useMemo(() => {
     if (!selectedTeacher) return defaultTableData
 
-    return buildScheduleForTeacher({
+    return buildTableForTeacher({
       lessons,
       selectedTeacher,
       hideTimeColumn,

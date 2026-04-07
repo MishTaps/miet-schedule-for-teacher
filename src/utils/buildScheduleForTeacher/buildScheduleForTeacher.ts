@@ -1,7 +1,7 @@
 import { defaultTableData } from '@/components/MainWorkplace/tableConfig/defaultTableData'
 import type { ScheduleDataItem, ScheduleRecord, WeekTypes } from '@/types'
 
-interface buildScheduleForTeacherProps {
+interface buildTableForTeacherProps {
   lessons: ScheduleDataItem[]
   selectedTeacher: string
   timeCodes: number[]
@@ -9,102 +9,130 @@ interface buildScheduleForTeacherProps {
   timeRanges: string[]
 }
 
-export const buildScheduleForTeacher = ({
+const createEmptyWeekTypes = (): WeekTypes => ({
+  weekType0: '',
+  weekType1: '',
+  weekType2: '',
+  weekType3: '',
+})
+
+const mergeLessonInfo = (
+  existingInfo: string,
+  newGroup: string,
+  newClass: string,
+  newRoom: string,
+  timeCode: number,
+) => {
+  const existingInfoWithoutTime = existingInfo.startsWith(`${timeCode} пара`)
+    ? existingInfo.split('\n').slice(2).join('\n')
+    : existingInfo
+
+  const blocks = existingInfoWithoutTime.split('\n---\n')
+  let isFoundMatch = false
+
+  const updatedBlocks = blocks.map((block) => {
+    const [blockGroups, blockClass, blockRoom] = block.split('\n')
+
+    if (blockClass === newClass && blockRoom === newRoom) {
+      isFoundMatch = true
+
+      const groupsArray = blockGroups.split(',').map((g) => g.trim())
+
+      if (!groupsArray.includes(newGroup)) {
+        groupsArray.push(newGroup)
+        groupsArray.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+      }
+
+      return `${groupsArray.join(', ')}\n${blockClass}\n${blockRoom}`
+    }
+
+    return block
+  })
+
+  if (!isFoundMatch) {
+    updatedBlocks.push(`${newGroup}\n${newClass}\n${newRoom}`)
+  }
+
+  return updatedBlocks.join('\n---\n')
+}
+
+const formatTimeRange = (timeRange: string) => {
+  return timeRange
+    .split(' - ')
+    .map((str) => {
+      const date = new Date(str)
+      return date.toLocaleTimeString('ru-RU', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    })
+    .join(' - ')
+}
+
+const addTimeIfNeeded = (
+  mergedInfo: string,
+  hideTimeColumn: boolean,
+  timeCode: number,
+  timeRange: string,
+) => {
+  if (!hideTimeColumn) return mergedInfo
+
+  if (mergedInfo.startsWith(`${timeCode} пара`)) return mergedInfo
+
+  const timeName = `${timeCode} пара`
+  const formattedRange = formatTimeRange(timeRange)
+
+  return `${timeName}\n${formattedRange}\n${mergedInfo}`
+}
+
+export const buildTableForTeacher = ({
   lessons,
   selectedTeacher,
   timeCodes,
   hideTimeColumn,
   timeRanges,
-}: buildScheduleForTeacherProps) => {
+}: buildTableForTeacherProps) => {
   const updatedData: ScheduleRecord[] = structuredClone(defaultTableData)
 
-  lessons
-    .filter((l) => l.Class?.TeacherFull === selectedTeacher)
-    .forEach((lesson) => {
-      const timeIndex = lesson.Time.Code - 1
-      const dayKey = `day${lesson.Day}`
-      const weekKey = `weekType${lesson.DayNumber}` as keyof WeekTypes
+  for (const lesson of lessons) {
+    if (lesson.Class?.TeacherFull !== selectedTeacher) continue
 
-      if (!updatedData[timeIndex]) return
+    const timeIndex = lesson.Time.Code - 1
+    const timeCode = timeCodes[timeIndex]
+    const timeRange = timeRanges[timeIndex]
 
-      const currentRow = updatedData[timeIndex]
-      const currentDay = (currentRow[dayKey] as WeekTypes) ?? {
-        weekType0: '',
-        weekType1: '',
-        weekType2: '',
-        weekType3: '',
-      }
+    const dayKey = `day${lesson.Day}`
+    const weekKey = `weekType${lesson.DayNumber}`
 
-      const newGroup = lesson.Group.Name
-      const newClass = lesson.Class.Name
-      const newRoom = lesson.Room.Name
+    if (!updatedData[timeIndex]) continue
 
-      let mergedInfo = ''
-      const existingInfo = currentDay[weekKey]
-      if (existingInfo) {
-        const existingInfoWithoutTime = existingInfo.startsWith(
-          `${timeCodes[lesson.Time.Code - 1]} пара`,
-        )
-          ? existingInfo.split('\n').slice(2).join('\n')
-          : existingInfo
+    const currentTime = updatedData[timeIndex]
+    const currentDay = (currentTime[dayKey] as WeekTypes) ?? createEmptyWeekTypes()
 
-        const blocks = existingInfoWithoutTime.split('\n---\n')
-        let isFoundMatch = false
+    const newGroup = lesson.Group.Name
+    const newClass = lesson.Class.Name
+    const newRoom = lesson.Room.Name
 
-        const updatedBlocks = blocks.map((block) => {
-          const lines = block.split('\n')
-          const blockGroups = lines[0]
-          const blockClass = lines[1]
-          const blockRoom = lines[2]
+    let mergedInfo = ''
 
-          if (blockClass === newClass && blockRoom === newRoom) {
-            isFoundMatch = true
-            const groupsArray = blockGroups.split(',').map((g) => g.trim())
+    const existingInfo = currentDay[weekKey]
 
-            if (!groupsArray.includes(newGroup)) {
-              groupsArray.push(newGroup)
-              groupsArray.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
-            }
+    if (existingInfo) {
+      mergedInfo = mergeLessonInfo(existingInfo, newGroup, newClass, newRoom, timeCode)
+    } else {
+      mergedInfo = `${newGroup}\n${newClass}\n${newRoom}`
+    }
 
-            return `${groupsArray.join(', ')}\n${blockClass}\n${blockRoom}`
-          }
-          return block
-        })
+    mergedInfo = addTimeIfNeeded(mergedInfo, hideTimeColumn, timeCode, timeRange)
 
-        if (!isFoundMatch) {
-          updatedBlocks.push(`${newGroup}\n${newClass}\n${newRoom}`)
-        }
-
-        mergedInfo = updatedBlocks.join('\n---\n')
-      } else {
-        mergedInfo = `${newGroup}\n${newClass}\n${newRoom}`
-      }
-
-      if (hideTimeColumn && !mergedInfo.startsWith(`${timeCodes[lesson.Time.Code - 1]} пара`)) {
-        const timeName = `${timeCodes[lesson.Time.Code - 1]} пара`
-        const timeRange = timeRanges[lesson.Time.Code - 1]
-
-        const mergedTimeRange = timeRange
-          .split(' - ')
-          .map((str) => {
-            const date = new Date(str)
-            return date.toLocaleTimeString('ru-RU', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })
-          })
-          .join(' - ')
-        mergedInfo = `${timeName}\n${mergedTimeRange}\n${mergedInfo}`
-      }
-
-      updatedData[timeIndex] = {
-        ...currentRow,
-        [dayKey]: {
-          ...currentDay,
-          [weekKey]: mergedInfo,
-        },
-      }
-    })
+    updatedData[timeIndex] = {
+      ...currentTime,
+      [dayKey]: {
+        ...currentDay,
+        [weekKey]: mergedInfo,
+      },
+    }
+  }
 
   return updatedData
 }
