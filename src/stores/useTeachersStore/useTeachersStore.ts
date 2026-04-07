@@ -6,7 +6,7 @@ interface TeachersStore {
   selectedTeacher: string | null
   favoriteTeachers: string[]
   setTeachers: (value: string[]) => void
-  setSelectedTeacher: (value: string) => void
+  setSelectedTeacher: (value: string | null) => void
   setFavoriteTeachers: (value: string[]) => void
   toggleFavoriteTeacher: (teacher: string) => Promise<void>
 }

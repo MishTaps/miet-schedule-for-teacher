@@ -28,6 +28,7 @@ export const MainWorkplace = () => {
   const timeCodes = useLessonsStore((state) => state.timeCodes)
   const timeRanges = useLessonsStore((state) => state.timeRanges)
 
+  const teachers = useTeachersStore((state) => state.teachers)
   const selectedTeacher = useTeachersStore((state) => state.selectedTeacher)
 
   const isGroupsScanned = useLoadingStore((state) => state.isGroupsScanned)
@@ -66,11 +67,9 @@ export const MainWorkplace = () => {
       <CachedInfo />
       <LoadGroupsAlert />
       <MainForm />
-      {selectedTeacher && (
-        <>
-          <ScheduleTable tableData={tableData} />
-          <ExportSchedule tableData={tableData} />
-        </>
+      {selectedTeacher && <ScheduleTable tableData={tableData} />}
+      {selectedTeacher && teachers.includes(selectedTeacher) && (
+        <ExportSchedule tableData={tableData} />
       )}
     </>
   )

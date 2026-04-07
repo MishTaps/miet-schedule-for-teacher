@@ -3,13 +3,17 @@ import { useMemo } from 'react'
 import type { ColumnType } from 'antd/es/table'
 import { columnsConfigDays, columnsConfigWeeks } from '../MainWorkplace/tableConfig/columnsConfig'
 import type { ScheduleRecord, WeekTypes } from '@/types'
-import { useFiltrationSettingsStore, useVisualSettingsStore } from '@/stores'
+import { useFiltrationSettingsStore, useTeachersStore, useVisualSettingsStore } from '@/stores'
 
 interface ScheduleTable {
   tableData: ScheduleRecord[]
 }
 
 export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
+  const teachers = useTeachersStore((state) => state.teachers)
+  const selectedTeacher = useTeachersStore((state) => state.selectedTeacher)
+  const setSelectedTeacher = useTeachersStore((state) => state.setSelectedTeacher)
+
   const hideEmptyDaysTypes = useVisualSettingsStore((state) => state.hideEmptyDaysTypes)
   const hideEmptyRows = useVisualSettingsStore((state) => state.hideEmptyRows)
   const hideTimeColumn = useVisualSettingsStore((state) => state.hideTimeColumn)
@@ -89,17 +93,17 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
       const dayKeys = Object.keys(row).filter((key) => key.startsWith('day'))
 
       if (selectedDayOfWeek && selectedDayOfWeek !== 'allDays') {
-        const day = row[selectedDayOfWeek as keyof ScheduleRecord] as WeekTypes | undefined
+        const day = row[selectedDayOfWeek]
         if (!day) return true
         if (selectedWeekType === 'allWeekTypes') {
           return Object.values(day).every((v) => typeof v !== 'string' || v.trim() === '')
         }
-        const value = day[selectedWeekType as keyof WeekTypes]
+        const value = day[selectedWeekType]
         return typeof value !== 'string' || value.trim() === ''
       }
 
       return dayKeys.every((dayKey) => {
-        const day = row[dayKey] as WeekTypes | undefined
+        const day = row[dayKey] as WeekTypes
         if (!day) return true
         if (selectedWeekType === 'allWeekTypes') {
           return Object.values(day).every((v) => typeof v !== 'string' || v.trim() === '')
@@ -117,6 +121,28 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
     setSelectedDayOfWeek('allDays')
     setSelectedWeekType('allWeekTypes')
     message.info('Фильтры сброшены')
+  }
+
+  const resetTeacher = () => {
+    setSelectedTeacher(null)
+    message.info('Выберите нового преподавателя')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  if (selectedTeacher && !teachers.includes(selectedTeacher)) {
+    return (
+      <>
+        <Divider>Расписание преподавателя</Divider>
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description="У данного преподавателя отсутствуют занятия..."
+        >
+          <Button type="default" onClick={resetTeacher}>
+            Сбросить преподавателя
+          </Button>
+        </Empty>
+      </>
+    )
   }
 
   return (
