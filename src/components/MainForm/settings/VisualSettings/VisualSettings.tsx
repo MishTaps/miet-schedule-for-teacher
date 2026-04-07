@@ -44,15 +44,15 @@ export const VisualSettings = () => {
         </Tooltip>
       </Form.Item>
       <div className={styles.switch}>
-        <span>Скрыть дни, числители, знаменатели без занятий</span>
+        <span>Скрыть столбцы без занятий</span>
         <Switch checked={hideEmptyDaysTypes} onChange={setHideEmptyDaysTypes} />
       </div>
       <div className={styles.switch}>
-        <span>Скрыть пары без занятий</span>
+        <span>Скрыть строки без занятий</span>
         <Switch checked={hideEmptyRows} onChange={setHideEmptyRows} />
       </div>
       <div className={styles.switch}>
-        <span>Скрыть столбец «Пары»</span>
+        <span>Скрыть столбец «Время занятия»</span>
         <Switch checked={hideTimeColumn} onChange={setHideTimeColumn} />
       </div>
     </div>

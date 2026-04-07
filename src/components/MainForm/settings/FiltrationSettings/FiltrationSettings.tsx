@@ -50,7 +50,7 @@ export const FiltrationSettings = () => {
   return (
     <div className={styles.settingsBody}>
       <Divider>Фильтрация</Divider>
-      <Form.Item label="Выберите день недели:">
+      <Form.Item label="День недели:">
         <Flex>
           <Select<SelectedDayOfWeekType>
             options={selectableDays}
@@ -64,7 +64,7 @@ export const FiltrationSettings = () => {
           </Tooltip>
         </Flex>
       </Form.Item>
-      <Form.Item label="Выберите тип недели:">
+      <Form.Item label="Тип недели:">
         <Select<SelectedWeekType>
           options={selectableWeekTypes}
           value={selectedWeekType}

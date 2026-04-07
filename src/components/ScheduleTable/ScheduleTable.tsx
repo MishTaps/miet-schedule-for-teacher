@@ -121,7 +121,7 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
 
   return (
     <>
-      <Divider>Расписание преподавателя готово!</Divider>
+      <Divider>Расписание преподавателя</Divider>
       <Table
         dataSource={visibleTableData}
         columns={visibleColumns}

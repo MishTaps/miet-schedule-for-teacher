@@ -96,7 +96,7 @@ export const columnsConfigDays: (
   | ColumnGroupType<ScheduleRecord>
 )[] = [
   {
-    title: 'Пары',
+    title: 'Время занятия',
     dataIndex: 'lesson',
     key: 'lesson',
     width: 120,
@@ -140,7 +140,7 @@ export const columnsConfigWeeks: (
   | ColumnGroupType<ScheduleRecord>
 )[] = [
   {
-    title: 'Пары',
+    title: 'Время занятия',
     dataIndex: 'lesson',
     key: 'lesson',
     width: 120,

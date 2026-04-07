@@ -50,7 +50,7 @@ export const MainForm = () => {
     <>
       <Divider>Заполните форму:</Divider>
       <Form layout="vertical" className={styles.form}>
-        <Form.Item label="Выберите преподавателя:" className={styles.select}>
+        <Form.Item label="Преподаватель:" className={styles.select}>
           <Select
             showSearch
             virtual
