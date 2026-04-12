@@ -35,6 +35,8 @@ export const MainWorkplace = () => {
   const isGetGroupsError = useLoadingStore((state) => state.isGetGroupsError)
   const isGetGroups = useLoadingStore((state) => state.isGetGroups)
 
+  const isTeacherAvailable = selectedTeacher && teachers.includes(selectedTeacher)
+
   const tableData = useMemo(() => {
     if (!selectedTeacher) return defaultTableData
 
@@ -68,9 +70,7 @@ export const MainWorkplace = () => {
       <LoadGroupsAlert />
       <MainForm />
       {selectedTeacher && <ScheduleTable tableData={tableData} />}
-      {selectedTeacher && teachers.includes(selectedTeacher) && (
-        <ExportSchedule tableData={tableData} />
-      )}
+      {isTeacherAvailable && <ExportSchedule tableData={tableData} />}
     </>
   )
 }

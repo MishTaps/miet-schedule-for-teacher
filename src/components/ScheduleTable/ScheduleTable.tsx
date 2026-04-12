@@ -24,6 +24,8 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
   const setSelectedDayOfWeek = useFiltrationSettingsStore((state) => state.setSelectedDayOfWeek)
   const setSelectedWeekType = useFiltrationSettingsStore((state) => state.setSelectedWeekType)
 
+  const isTeacherAvailable = selectedTeacher && teachers.includes(selectedTeacher)
+
   const columnsConfig = sortColumnType == 'day' ? columnsConfigDays : columnsConfigWeeks
 
   const visibleColumns = useMemo(() => {
@@ -129,7 +131,7 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  if (selectedTeacher && !teachers.includes(selectedTeacher)) {
+  if (isTeacherAvailable) {
     return (
       <>
         <Divider>Расписание преподавателя</Divider>
