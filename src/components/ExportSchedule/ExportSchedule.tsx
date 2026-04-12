@@ -1,5 +1,7 @@
+// TODO: Этот файл прям ПОЛНОСТЬЮ нужно рефакторить
+
 import { Button, Card, DatePicker, Divider, Flex, Form, Tour, type TourProps } from 'antd'
-import { DownloadOutlined } from '@ant-design/icons'
+import { CloudDownloadOutlined } from '@ant-design/icons'
 import styles from './ExportSchedule.module.css'
 import { createEvents, type EventAttributes } from 'ics'
 import type { ScheduleRecord } from '@/types'
@@ -360,7 +362,7 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ tableData }) => {
               onClick={handleDownload}
               type="primary"
               disabled={!canDownload}
-              icon={<DownloadOutlined />}
+              icon={<CloudDownloadOutlined />}
             >
               Скачать расписание (.ics)
             </Button>

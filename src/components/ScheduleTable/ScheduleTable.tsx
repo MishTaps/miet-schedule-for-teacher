@@ -131,7 +131,7 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  if (isTeacherAvailable) {
+  if (!isTeacherAvailable) {
     return (
       <>
         <Divider>Расписание преподавателя</Divider>

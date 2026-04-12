@@ -1,33 +1,37 @@
+import { Button, Flex, Tooltip } from 'antd'
 import styles from './Footer.module.css'
-import { GithubOutlined } from '@ant-design/icons'
+import { GithubFilled, CloudDownloadOutlined } from '@ant-design/icons'
 
 export const Footer = () => {
   return (
     <footer>
       <p>
-        Это <u>не официальный</u> сайт администрации университета, а просто небольшой проект для
+        Это <b>не официальный</b> сайт администрации университета, а просто небольшой проект для
         студентов и преподавателей для расширения функционала просмотра расписания.
       </p>
-      <p>Полезные ссылки и обратная связь:</p>
-
-      <div className={styles.footerLinks}>
-        <div>
-          <a href="https://github.com/MishTaps/miet-schedule-for-teacher" target="_blank">
-            <GithubOutlined className={styles.githubIcon} />
-            Проект GitHub
-          </a>
-        </div>
-        <div>
-          <a
-            href="https://t.me/mietScheduleTeacherFeedbackBot"
-            target="_blank"
-            className={styles.telegramLink}
-          >
-            <img src="/tg-icon.svg" width="16" height="16"></img>
-            Telegram
-          </a>
-        </div>
-      </div>
+      <Flex gap="small" wrap>
+        <Button
+          icon={<GithubFilled />}
+          size="small"
+          href="https://github.com/MishTaps/miet-schedule-for-teacher"
+          target="_blank"
+        >
+          Проект GitHub
+        </Button>
+        <Button
+          icon={<img src="/tg-icon.svg" className={styles.telegramImg} />}
+          size="small"
+          href="https://t.me/mietScheduleTeacherFeedbackBot"
+          target="_blank"
+        >
+          Обратная связь
+        </Button>
+        <Tooltip title="В разработке... Будет доступно в ближайшее время">
+          <Button icon={<CloudDownloadOutlined />} size="small" disabled>
+            Скачать приложение (PWA)
+          </Button>
+        </Tooltip>
+      </Flex>
     </footer>
   )
 }
