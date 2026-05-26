@@ -4,6 +4,8 @@ import { Footer, Header, MainWorkplace } from './components'
 import { Content } from 'antd/es/layout/layout'
 import ruRU from 'antd/locale/ru_RU'
 
+import './i18n'
+
 function App() {
   return (
     <ConfigProvider locale={ruRU}>

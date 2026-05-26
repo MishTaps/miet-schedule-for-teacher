@@ -20,8 +20,11 @@ import {
 } from '@/stores'
 import { buildTableForTeacher } from '@/utils'
 import { useFetchGroups, useLoadCache } from '@/hooks'
+import { useTranslation } from 'react-i18next'
 
 export const MainWorkplace = () => {
+  const { t } = useTranslation()
+
   const hideTimeColumn = useVisualSettingsStore((state) => state.hideTimeColumn)
 
   const lessons = useLessonsStore((state) => state.lessons)
@@ -58,7 +61,7 @@ export const MainWorkplace = () => {
 
   if (!isGroupsScanned) {
     return (
-      <Spin spinning={isGetGroups} tip="Загрузка...">
+      <Spin spinning={isGetGroups} tip={t('loading')}>
         <GetScheduleButton />
       </Spin>
     )

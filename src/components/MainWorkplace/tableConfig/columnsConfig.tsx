@@ -2,12 +2,13 @@ import type { TableColumnType } from 'antd'
 import styles from './columnsConfig.module.css'
 import type { ColumnGroupType } from 'antd/es/table'
 import type { ScheduleRecord } from '@/types'
+import i18n from '@/i18n'
 
 const renderText = (text: string) => <div className={styles.text}>{text}</div>
 
 const getWeekTypeColumns = (dayKey: string) => [
   {
-    title: 'Числ-I',
+    title: i18n.t('weeks.weekType0.shortName'),
     dataIndex: [dayKey, 'weekType0'],
     key: `${dayKey}weekType0`,
     align: 'center' as const,
@@ -15,7 +16,7 @@ const getWeekTypeColumns = (dayKey: string) => [
     className: styles.column,
   },
   {
-    title: 'Знам-I',
+    title: i18n.t('weeks.weekType1.shortName'),
     dataIndex: [dayKey, 'weekType1'],
     key: `${dayKey}weekType1`,
     align: 'center' as const,
@@ -23,7 +24,7 @@ const getWeekTypeColumns = (dayKey: string) => [
     className: styles.column,
   },
   {
-    title: 'Числ-II',
+    title: i18n.t('weeks.weekType2.shortName'),
     dataIndex: [dayKey, 'weekType2'],
     key: `${dayKey}weekType2`,
     align: 'center' as const,
@@ -31,7 +32,7 @@ const getWeekTypeColumns = (dayKey: string) => [
     className: styles.column,
   },
   {
-    title: 'Знам-II',
+    title: i18n.t('weeks.weekType3.shortName'),
     dataIndex: [dayKey, 'weekType3'],
     key: `${dayKey}weekType3`,
     align: 'center' as const,
@@ -42,7 +43,7 @@ const getWeekTypeColumns = (dayKey: string) => [
 
 const getDaysColumns = (weekKey: string) => [
   {
-    title: 'Пн',
+    title: i18n.t('days.day1.shortName'),
     dataIndex: ['day1', weekKey],
     key: `day1${weekKey}`,
     align: 'center' as const,
@@ -50,7 +51,7 @@ const getDaysColumns = (weekKey: string) => [
     className: styles.column,
   },
   {
-    title: 'Вт',
+    title: i18n.t('days.day2.shortName'),
     dataIndex: ['day2', weekKey],
     key: `day2${weekKey}`,
     align: 'center' as const,
@@ -58,7 +59,7 @@ const getDaysColumns = (weekKey: string) => [
     className: styles.column,
   },
   {
-    title: 'Ср',
+    title: i18n.t('days.day3.shortName'),
     dataIndex: ['day3', weekKey],
     key: `day3${weekKey}`,
     align: 'center' as const,
@@ -66,7 +67,7 @@ const getDaysColumns = (weekKey: string) => [
     className: styles.column,
   },
   {
-    title: 'Чт',
+    title: i18n.t('days.day4.shortName'),
     dataIndex: ['day4', weekKey],
     key: `day4${weekKey}`,
     align: 'center' as const,
@@ -74,7 +75,7 @@ const getDaysColumns = (weekKey: string) => [
     className: styles.column,
   },
   {
-    title: 'Пт',
+    title: i18n.t('days.day5.shortName'),
     dataIndex: ['day5', weekKey],
     key: `day5${weekKey}`,
     align: 'center' as const,
@@ -82,7 +83,7 @@ const getDaysColumns = (weekKey: string) => [
     className: styles.column,
   },
   {
-    title: 'Сб',
+    title: i18n.t('days.day6.shortName'),
     dataIndex: ['day6', weekKey],
     key: `day6${weekKey}`,
     align: 'center' as const,
@@ -104,32 +105,32 @@ export const columnsConfigDays: (
     fixed: 'left',
   },
   {
-    title: 'Понедельник',
+    title: i18n.t('days.day1.longName'),
     align: 'center' as const,
     children: getWeekTypeColumns('day1'),
   },
   {
-    title: 'Вторник',
+    title: i18n.t('days.day2.longName'),
     align: 'center' as const,
     children: getWeekTypeColumns('day2'),
   },
   {
-    title: 'Среда',
+    title: i18n.t('days.day3.longName'),
     align: 'center' as const,
     children: getWeekTypeColumns('day3'),
   },
   {
-    title: 'Четверг',
+    title: i18n.t('days.day4.longName'),
     align: 'center' as const,
     children: getWeekTypeColumns('day4'),
   },
   {
-    title: 'Пятница',
+    title: i18n.t('days.day5.longName'),
     align: 'center' as const,
     children: getWeekTypeColumns('day5'),
   },
   {
-    title: 'Суббота',
+    title: i18n.t('days.day6.longName'),
     align: 'center' as const,
     children: getWeekTypeColumns('day6'),
   },
@@ -148,22 +149,22 @@ export const columnsConfigWeeks: (
     fixed: 'left',
   },
   {
-    title: 'Числитель-I',
+    title: i18n.t('weeks.weekType0.longName'),
     align: 'center' as const,
     children: getDaysColumns('weekType0'),
   },
   {
-    title: 'Знаменатель-I',
+    title: i18n.t('weeks.weekType1.longName'),
     align: 'center' as const,
     children: getDaysColumns('weekType1'),
   },
   {
-    title: 'Числитель-II',
+    title: i18n.t('weeks.weekType2.longName'),
     align: 'center' as const,
     children: getDaysColumns('weekType2'),
   },
   {
-    title: 'Знаменатель-II',
+    title: i18n.t('weeks.weekType3.longName'),
     align: 'center' as const,
     children: getDaysColumns('weekType3'),
   },

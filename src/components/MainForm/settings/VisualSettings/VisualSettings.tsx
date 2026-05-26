@@ -2,8 +2,11 @@ import { useVisualSettingsStore, useFiltrationSettingsStore } from '@/stores'
 import { Divider, Form, Tooltip, Radio, Switch } from 'antd'
 import styles from '../settings.module.css'
 import type { RadioChangeEvent } from 'antd/lib'
+import { useTranslation } from 'react-i18next'
 
 export const VisualSettings = () => {
+  const { t } = useTranslation()
+
   const hideEmptyDaysTypes = useVisualSettingsStore((state) => state.hideEmptyDaysTypes)
   const hideEmptyRows = useVisualSettingsStore((state) => state.hideEmptyRows)
   const hideTimeColumn = useVisualSettingsStore((state) => state.hideTimeColumn)
@@ -19,8 +22,8 @@ export const VisualSettings = () => {
   const areFiltersUsed = selectedDayOfWeek !== 'allDays' || selectedWeekType !== 'allWeekTypes'
 
   const selectSortType = [
-    { label: 'Дням недели', value: 'day' },
-    { label: 'Типам недели', value: 'week' },
+    { label: t('mainForm.visual.sort.sortType.day'), value: 'day' },
+    { label: t('mainForm.visual.sort.sortType.week'), value: 'week' },
   ]
 
   const handleSelectSortType = (e: RadioChangeEvent) => {
@@ -29,9 +32,9 @@ export const VisualSettings = () => {
 
   return (
     <div className={styles.settingsBody}>
-      <Divider>Настройки отображения</Divider>
-      <Form.Item label="Сортировка по:" name="sortType">
-        <Tooltip title={areFiltersUsed && 'Сортировка доступна только при выключенных фильтрах'}>
+      <Divider>{t('mainForm.visual.header')}</Divider>
+      <Form.Item label={t('mainForm.visual.sort.label')} name="sortType">
+        <Tooltip title={areFiltersUsed && t('mainForm.visual.sort.tooltip')}>
           <Radio.Group
             block
             disabled={areFiltersUsed}
@@ -44,15 +47,15 @@ export const VisualSettings = () => {
         </Tooltip>
       </Form.Item>
       <div className={styles.switch}>
-        <span>Скрыть столбцы без занятий</span>
+        <span>{t('mainForm.visual.noColumns')}</span>
         <Switch checked={hideEmptyDaysTypes} onChange={setHideEmptyDaysTypes} />
       </div>
       <div className={styles.switch}>
-        <span>Скрыть строки без занятий</span>
+        <span>{t('mainForm.visual.noRows')}</span>
         <Switch checked={hideEmptyRows} onChange={setHideEmptyRows} />
       </div>
       <div className={styles.switch}>
-        <span>Скрыть столбец «Время занятия»</span>
+        <span>{t('mainForm.visual.noTime')}</span>
         <Switch checked={hideTimeColumn} onChange={setHideTimeColumn} />
       </div>
     </div>

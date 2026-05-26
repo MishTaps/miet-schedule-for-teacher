@@ -10,6 +10,7 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/ru'
 import { useRef, useState } from 'react'
 import { useTeachersStore } from '@/stores'
+import { Trans, useTranslation } from 'react-i18next'
 
 interface ExportSchedule {
   tableData: ScheduleRecord[]
@@ -37,6 +38,8 @@ type ParsedLesson = {
 }
 
 export const ExportSchedule: React.FC<ExportSchedule> = ({ tableData }) => {
+  const { t } = useTranslation()
+
   const selectedTeacher = useTeachersStore((state) => state.selectedTeacher)
 
   dayjs.locale('ru')
@@ -53,43 +56,38 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ tableData }) => {
 
   const steps: TourProps['steps'] = [
     {
-      title: 'Добавление расписания в календарь',
+      title: t('export.help.step1.title'),
       description: (
         <div>
-          <p>
-            Вы можете экспортировать расписание в любой календарь: Google Календарь, Яндекс
-            Календарь, Outlook и другие.
-          </p>
-          <p>После импорта занятия появятся в вашем календаре.</p>
+          <p>{t('export.help.step1.description.p1')}</p>
+          <p>{t('export.help.step1.description.p2')}</p>
         </div>
       ),
       target: () => ref0.current,
     },
     {
-      title: 'Выберите период',
+      title: t('export.help.step2.title'),
       description: (
         <div>
+          <p>{t('export.help.step2.description.p1')}</p>
           <p>
-            Занятия будут добавлены в календаре только внутри этого периода — за его пределами
-            занятия в календаре создаваться не будут.
-          </p>
-          <p>
-            <b>Внимание!</b>
-            <br></br>Начальная неделя экспорта будет определяться как <b>Числитель I</b>.
+            <Trans
+              i18nKey="export.help.step2.description.p2"
+              components={{ bold: <b />, br: <br /> }}
+            />
           </p>
         </div>
       ),
       target: () => ref1.current,
     },
     {
-      title: 'Скачивание и импорт',
+      title: t('export.help.step3.title'),
       description: (
         <div>
           <p>
-            Нажмите кнопку, чтобы скачать файл <b>.ics</b>. Затем импортируйте его в ваш календарь
-            через настройки календаря.
+            <Trans i18nKey="export.help.step3.description.p1" components={{ bold: <b /> }} />
           </p>
-          <p>Пример пути настройки: Календари → Настройки → Импорт.</p>
+          <p>{t('export.help.step3.description.p2')}</p>
         </div>
       ),
       target: () => ref2.current,
@@ -312,14 +310,14 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ tableData }) => {
 
   return (
     <div ref={ref0}>
-      <Divider>Экспорт расписания в ваш календарь</Divider>
+      <Divider>{t('export.header')}</Divider>
       <Form layout="vertical" className={styles.form}>
         <Button block className={styles.howUseButton} onClick={() => setOpen(true)}>
-          Как пользоваться экспортом?
+          {t('export.help.button')}
         </Button>
         <div ref={ref1}>
           <Flex wrap="wrap" gap="middle">
-            <Form.Item label="Начальная неделя экспорта:" className={styles.selectWeek}>
+            <Form.Item label={t('export.form.start')} className={styles.selectWeek}>
               <DatePicker
                 format={(value) =>
                   `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
@@ -330,7 +328,7 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ tableData }) => {
                 disabledDate={disableStartAfterEnd}
               ></DatePicker>
             </Form.Item>
-            <Form.Item label="Конечная неделя экспорта:" className={styles.selectWeek}>
+            <Form.Item label={t('export.form.end')} className={styles.selectWeek}>
               <DatePicker
                 format={(value) =>
                   `${value.startOf('week').format('DD.MM')} - ${value.endOf('week').format('DD.MM.YYYY')}`
@@ -347,7 +345,7 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ tableData }) => {
         {canDownload && (
           <Card
             size="small"
-            title="Информация об экспортируемых неделях"
+            title={t('export.cardTitle')}
             className={styles.card}
             styles={{ body: { height: 'calc(100% - 38px)', overflowY: 'auto' } }}
           >
@@ -364,7 +362,7 @@ export const ExportSchedule: React.FC<ExportSchedule> = ({ tableData }) => {
               disabled={!canDownload}
               icon={<CloudDownloadOutlined />}
             >
-              Скачать расписание (.ics)
+              {t('export.download')}
             </Button>
           </div>
         </Form.Item>

@@ -4,8 +4,11 @@ import styles from './GetScheduleButton.module.css'
 import { useLoadingStore } from '@/stores'
 import { useScanGroups } from '@/hooks'
 import { LoadingProgressBar } from '@/components'
+import { useTranslation } from 'react-i18next'
 
 export const GetScheduleButton = () => {
+  const { t } = useTranslation()
+
   const { loadAllSchedules } = useScanGroups()
 
   const groups = useLoadingStore((state) => state.groups)
@@ -15,7 +18,7 @@ export const GetScheduleButton = () => {
     <>
       <Row justify="center" align="middle" className={styles.body}>
         <Col className={styles.button}>
-          <Divider>Получение данных с сервера</Divider>
+          <Divider>{t('getSchedule.header')}</Divider>
           <Button
             type="primary"
             block
@@ -23,7 +26,7 @@ export const GetScheduleButton = () => {
             onClick={() => loadAllSchedules(groups)}
             icon={<SearchOutlined />}
           >
-            Получить расписание занятий
+            {t('getSchedule.button')}
           </Button>
         </Col>
       </Row>

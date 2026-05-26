@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Button, Flex, Tooltip } from 'antd'
 import styles from './Footer.module.css'
 import { GithubFilled, CloudDownloadOutlined, GiftOutlined } from '@ant-design/icons'
+import { Trans, useTranslation } from 'react-i18next'
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]
@@ -13,6 +14,8 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export const Footer = () => {
+  const { t } = useTranslation()
+
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isInstallAvailable, setIsInstallAvailable] = useState(false)
 
@@ -54,8 +57,7 @@ export const Footer = () => {
   return (
     <footer>
       <p>
-        Это <b>не официальный</b> сайт администрации университета, а просто небольшой проект для
-        студентов и преподавателей для расширения функционала просмотра расписания.
+        <Trans i18nKey="footer.info" components={{ bold: <b /> }} />
       </p>
       <Flex gap="small" wrap>
         <Button
@@ -64,7 +66,7 @@ export const Footer = () => {
           href="https://github.com/MishTaps/miet-schedule-for-teacher"
           target="_blank"
         >
-          Проект GitHub
+          {t('footer.button.github')}
         </Button>
         <Button
           icon={<img src="/tg-icon.svg" className={styles.icon} />}
@@ -72,21 +74,16 @@ export const Footer = () => {
           href="https://t.me/mietScheduleTeacherFeedbackBot"
           target="_blank"
         >
-          Обратная связь
+          {t('footer.button.telegram')}
         </Button>
-        <Tooltip
-          title={
-            !isInstallAvailable &&
-            'Приложение недоступно для установки через ваш браузер или приложение уже установлено'
-          }
-        >
+        <Tooltip title={!isInstallAvailable && t('footer.button.downloadPWA.tooltip')}>
           <Button
             icon={<CloudDownloadOutlined />}
             size="small"
             onClick={installPWA}
             disabled={!isInstallAvailable}
           >
-            Скачать приложение (PWA)
+            {t('footer.button.downloadPWA.text')}
           </Button>
         </Tooltip>
         <Button

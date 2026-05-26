@@ -12,3 +12,13 @@ img {
 .title {
     text-align: right;
 }
+
+.flag {
+    width: 16px;
+    margin-right: 4px;
+}
+
+.select {
+    height: 30px;
+    margin: auto 0 auto 10px;
+}

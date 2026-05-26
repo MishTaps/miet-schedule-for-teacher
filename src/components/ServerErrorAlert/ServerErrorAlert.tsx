@@ -1,6 +1,8 @@
 import { Result } from 'antd'
-import { messages } from './messages'
+import { useTranslation } from 'react-i18next'
 
 export const ServerErrorAlert = () => {
-  return <Result status="500" title="Ошибка сервера" subTitle={messages.serverError()} />
+  const { t } = useTranslation()
+
+  return <Result status="500" title={t('serverError.title')} subTitle={t('serverError.subTitle')} />
 }
