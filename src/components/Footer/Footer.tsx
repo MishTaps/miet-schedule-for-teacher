@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button, Flex, Tooltip } from 'antd'
 import styles from './Footer.module.css'
-import { GithubFilled, CloudDownloadOutlined } from '@ant-design/icons'
+import { GithubFilled, CloudDownloadOutlined, GiftOutlined } from '@ant-design/icons'
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]
@@ -89,6 +89,14 @@ export const Footer = () => {
             Скачать приложение (PWA)
           </Button>
         </Tooltip>
+        <Button
+          icon={<GiftOutlined />}
+          size="small"
+          href="https://pay.cloudtips.ru/p/c9614daa"
+          target="_blank"
+        >
+          Поддержать автора
+        </Button>
       </Flex>
     </footer>
   )
