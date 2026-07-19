@@ -1,15 +1,18 @@
 import { Button, Divider, Empty, message, Table } from 'antd'
 import { useMemo } from 'react'
 import type { ColumnType } from 'antd/es/table'
-import { columnsConfigDays, columnsConfigWeeks } from '../MainWorkplace/tableConfig/columnsConfig'
+import { getColumnsConfigDays, getColumnsConfigWeeks } from '../MainWorkplace/tableConfig/columnsConfig'
 import type { ScheduleRecord, WeekTypes } from '@/types'
 import { useFiltrationSettingsStore, useTeachersStore, useVisualSettingsStore } from '@/stores'
+import { useTranslation } from 'react-i18next'
 
 interface ScheduleTable {
   tableData: ScheduleRecord[]
 }
 
 export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
+  const { t } = useTranslation()
+
   const teachers = useTeachersStore((state) => state.teachers)
   const selectedTeacher = useTeachersStore((state) => state.selectedTeacher)
   const setSelectedTeacher = useTeachersStore((state) => state.setSelectedTeacher)
@@ -26,7 +29,7 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
 
   const isTeacherAvailable = selectedTeacher && teachers.includes(selectedTeacher)
 
-  const columnsConfig = sortColumnType == 'day' ? columnsConfigDays : columnsConfigWeeks
+  const columnsConfig = sortColumnType == 'day' ? getColumnsConfigDays(t) : getColumnsConfigWeeks(t)
 
   const visibleColumns = useMemo(() => {
     const isWeekTypeColumnEmpty = (dayKey: string, weekType: string) => {
@@ -122,25 +125,22 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
   const resetFilters = () => {
     setSelectedDayOfWeek('allDays')
     setSelectedWeekType('allWeekTypes')
-    message.info('Фильтры сброшены')
+    message.info(t('table.filters.message'))
   }
 
   const resetTeacher = () => {
     setSelectedTeacher(null)
-    message.info('Выберите нового преподавателя')
+    message.info(t('table.teacher.message'))
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   if (!isTeacherAvailable) {
     return (
       <>
-        <Divider>Расписание преподавателя</Divider>
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description="У данного преподавателя отсутствуют занятия..."
-        >
+        <Divider>{t('table.header')}</Divider>
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('table.teacher.empty')}>
           <Button type="default" onClick={resetTeacher}>
-            Сбросить преподавателя
+            {t('table.teacher.button')}
           </Button>
         </Empty>
       </>
@@ -149,7 +149,7 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
 
   return (
     <>
-      <Divider>Расписание преподавателя</Divider>
+      <Divider>{t('table.header')}</Divider>
       <Table
         dataSource={visibleTableData}
         columns={visibleColumns}
@@ -157,12 +157,9 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
         scroll={{ x: 'max-content' }}
         locale={{
           emptyText: (
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="Занятия у преподавателя по выбранным фильтрам не найдены..."
-            >
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('table.filters.empty')}>
               <Button type="default" onClick={resetFilters}>
-                Сбросить фильтры
+                {t('table.filters.button')}
               </Button>
             </Empty>
           ),

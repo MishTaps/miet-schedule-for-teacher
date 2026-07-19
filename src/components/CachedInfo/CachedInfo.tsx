@@ -1,15 +1,18 @@
 import { useLoadingStore } from '@/stores'
 import { Alert, Button } from 'antd'
 import localforage from 'localforage'
+import { useTranslation } from 'react-i18next'
 
 export const CachedInfo = () => {
+  const { t, i18n } = useTranslation()
+
   const updatedAt = useLoadingStore((state) => state.updatedAt)
 
   if (!updatedAt) return
 
   const diff = Date.now() - updatedAt
 
-  const formattedDate = new Date(updatedAt).toLocaleDateString('ru-RU', {
+  const formattedDate = new Date(updatedAt).toLocaleDateString(i18n.language === 'ru' ? 'ru-RU' : 'en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -22,20 +25,14 @@ export const CachedInfo = () => {
 
   const actionButton = (
     <Button size="small" onClick={resetSchedule}>
-      Загрузить заново
+      {t('cashed.button')}
     </Button>
   )
 
   const day = 1000 * 60 * 60 * 24
   if (diff < day) {
     return (
-      <Alert
-        title={`Расписание загружено ${formattedDate}`}
-        banner
-        showIcon
-        closable
-        type="success"
-      />
+      <Alert title={t('cashed.day', { formattedDate })} banner showIcon closable type="success" />
     )
   }
 
@@ -43,7 +40,7 @@ export const CachedInfo = () => {
   if (diff < week) {
     return (
       <Alert
-        title={`Расписание загружено более суток назад: ${formattedDate}`}
+        title={t('cashed.week', { formattedDate })}
         banner
         closable
         type="success"
@@ -56,7 +53,7 @@ export const CachedInfo = () => {
   if (diff < month) {
     return (
       <Alert
-        title={`Расписание загружено более недели назад: ${formattedDate}`}
+        title={t('cashed.month', { formattedDate })}
         banner
         closable
         type="warning"
@@ -69,7 +66,7 @@ export const CachedInfo = () => {
   if (diff < halfOfYear) {
     return (
       <Alert
-        title={`Расписание загружено более месяца назад: ${formattedDate}`}
+        title={t('cashed.halfOfYear', { formattedDate })}
         banner
         type="error"
         action={actionButton}

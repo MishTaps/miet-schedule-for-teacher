@@ -63,6 +63,7 @@ export const useScanGroups = () => {
 
             if (errorScannedGroups.includes(group)) {
               localErrorGroups = localErrorGroups.filter((item) => item !== group)
+              setErrorScannedGroups([...localErrorGroups])
             }
             if (i == 0) {
               res.Times.forEach((time) => {
@@ -71,7 +72,8 @@ export const useScanGroups = () => {
               })
             }
           } catch {
-            localErrorGroups.push(group)
+            localErrorGroups = [...localErrorGroups, group]
+            setErrorScannedGroups([...localErrorGroups])
           }
         }),
       )

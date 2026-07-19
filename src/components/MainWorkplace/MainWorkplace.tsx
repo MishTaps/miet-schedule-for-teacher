@@ -1,7 +1,7 @@
 import { Spin } from 'antd'
 import { useMemo } from 'react'
 
-import { defaultTableData } from './tableConfig/defaultTableData'
+import { getDefaultTableData } from './tableConfig/defaultTableData'
 
 import {
   CachedInfo,
@@ -20,8 +20,11 @@ import {
 } from '@/stores'
 import { buildTableForTeacher } from '@/utils'
 import { useFetchGroups, useLoadCache } from '@/hooks'
+import { useTranslation } from 'react-i18next'
 
 export const MainWorkplace = () => {
+  const { t } = useTranslation()
+
   const hideTimeColumn = useVisualSettingsStore((state) => state.hideTimeColumn)
 
   const lessons = useLessonsStore((state) => state.lessons)
@@ -38,7 +41,7 @@ export const MainWorkplace = () => {
   const isTeacherAvailable = selectedTeacher && teachers.includes(selectedTeacher)
 
   const tableData = useMemo(() => {
-    if (!selectedTeacher) return defaultTableData
+    if (!selectedTeacher) return getDefaultTableData()
 
     return buildTableForTeacher({
       lessons,
@@ -58,7 +61,7 @@ export const MainWorkplace = () => {
 
   if (!isGroupsScanned) {
     return (
-      <Spin spinning={isGetGroups} tip="Загрузка...">
+      <Spin spinning={isGetGroups} tip={t('loading')}>
         <GetScheduleButton />
       </Spin>
     )

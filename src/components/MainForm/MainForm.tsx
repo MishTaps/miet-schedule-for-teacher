@@ -6,8 +6,11 @@ import type { DefaultOptionType } from 'antd/es/select'
 import { useTeachersStore } from '@/stores'
 import { FiltrationSettings, VisualSettings } from './settings'
 import { TeacherItem } from './TeacherItem'
+import { useTranslation } from 'react-i18next'
 
 export const MainForm = () => {
+  const { t } = useTranslation()
+
   const teachers = useTeachersStore((state) => state.teachers)
   const selectedTeacher = useTeachersStore((state) => state.selectedTeacher)
   const favoriteTeachers = useTeachersStore((state) => state.favoriteTeachers)
@@ -48,20 +51,23 @@ export const MainForm = () => {
 
   return (
     <>
-      <Divider>Заполните форму:</Divider>
+      <Divider>{t('mainForm.header')}</Divider>
       <Form layout="vertical" className={styles.form}>
-        <Form.Item label="Преподаватель:" className={styles.select}>
+        <Form.Item label={t('mainForm.teacher.label')} className={styles.select}>
           <Select
             showSearch
             virtual
-            placeholder="Поиск по ФИО..."
+            placeholder={t('mainForm.teacher.placeholder')}
             options={teacherOptions}
             onSelect={selectTeacher}
             prefix={<UserOutlined />}
             value={selectedTeacher}
             optionRender={(option) => <TeacherItem teacher={String(option.label)} />}
             notFoundContent={
-              <Empty description="Преподаватели не найдены" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              <Empty
+                description={t('mainForm.teacher.empty')}
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
             }
           />
         </Form.Item>

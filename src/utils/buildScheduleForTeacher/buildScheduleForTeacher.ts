@@ -1,4 +1,4 @@
-import { defaultTableData } from '@/components/MainWorkplace/tableConfig/defaultTableData'
+import { getDefaultTableData } from '@/components/MainWorkplace/tableConfig/defaultTableData'
 import type { ScheduleDataItem, ScheduleRecord, WeekTypes } from '@/types'
 
 interface buildTableForTeacherProps {
@@ -92,7 +92,7 @@ export const buildTableForTeacher = ({
   hideTimeColumn,
   timeRanges,
 }: buildTableForTeacherProps) => {
-  const updatedData: ScheduleRecord[] = structuredClone(defaultTableData)
+  const updatedData: ScheduleRecord[] = structuredClone(getDefaultTableData())
 
   for (const lesson of lessons) {
     if (lesson.Class?.TeacherFull !== selectedTeacher) continue

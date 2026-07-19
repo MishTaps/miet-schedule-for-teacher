@@ -2,6 +2,7 @@ import { Alert, Button } from 'antd'
 import { useLoadingStore } from '@/stores'
 import { useScanGroups } from '@/hooks'
 import { LoadingProgressBar } from '@/components'
+import { useTranslation } from 'react-i18next'
 
 const pr = new Intl.PluralRules('ru-RU')
 function getPlural(count: number) {
@@ -15,19 +16,23 @@ function getPlural(count: number) {
 }
 
 export const LoadGroupsAlert = () => {
+  const { t } = useTranslation()
+
   const { loadAllSchedules } = useScanGroups()
 
   const isScanningGroups = useLoadingStore((state) => state.isScanningGroups)
   const errorScannedGroups = useLoadingStore((state) => state.errorScannedGroups)
 
-  if (!errorScannedGroups.length) return
+  const errorScannedGroupsCount = errorScannedGroups.length
 
-  const errorTextEnding = getPlural(errorScannedGroups.length)
+  if (!errorScannedGroupsCount) return
+
+  const errorTextEnding = getPlural(errorScannedGroupsCount)
 
   return (
     <>
       <Alert
-        title={`Не удалось загрузить расписание ${errorScannedGroups.length} ${errorTextEnding}. Расписание преподавателя может быть неполное.`}
+        title={t('loadGroupsAlert.title', { errorScannedGroupsCount, errorTextEnding })}
         banner
         action={
           <Button
@@ -35,7 +40,7 @@ export const LoadGroupsAlert = () => {
             size="small"
             onClick={() => loadAllSchedules(errorScannedGroups)}
           >
-            Повторить попытку
+            {t('loadGroupsAlert.button')}
           </Button>
         }
       />
