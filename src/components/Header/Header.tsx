@@ -13,8 +13,8 @@ export const Header = () => {
     <header>
       <Flex justify="space-between" align="center">
         <Flex align="center" gap="middle">
-          <img src="logo.svg" />
-          <div className={styles.title}>{t('header')}</div>
+          <img src="logo.svg" className={styles.logo} />
+          <div>{t('header')}</div>
         </Flex>
         <Select
           value={i18n.language}
@@ -35,7 +35,7 @@ export const Header = () => {
               label: (
                 <span>
                   <img src="/en-flag.svg" className={styles.flag} />
-                  English
+                  English (beta)
                 </span>
               ),
             },

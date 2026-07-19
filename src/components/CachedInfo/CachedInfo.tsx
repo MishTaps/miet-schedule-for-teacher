@@ -4,7 +4,7 @@ import localforage from 'localforage'
 import { useTranslation } from 'react-i18next'
 
 export const CachedInfo = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const updatedAt = useLoadingStore((state) => state.updatedAt)
 
@@ -12,7 +12,7 @@ export const CachedInfo = () => {
 
   const diff = Date.now() - updatedAt
 
-  const formattedDate = new Date(updatedAt).toLocaleDateString('ru-RU', {
+  const formattedDate = new Date(updatedAt).toLocaleDateString(i18n.language === 'ru' ? 'ru-RU' : 'en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

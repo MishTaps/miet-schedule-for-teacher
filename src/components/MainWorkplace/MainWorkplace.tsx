@@ -1,7 +1,7 @@
 import { Spin } from 'antd'
 import { useMemo } from 'react'
 
-import { defaultTableData } from './tableConfig/defaultTableData'
+import { getDefaultTableData } from './tableConfig/defaultTableData'
 
 import {
   CachedInfo,
@@ -41,7 +41,7 @@ export const MainWorkplace = () => {
   const isTeacherAvailable = selectedTeacher && teachers.includes(selectedTeacher)
 
   const tableData = useMemo(() => {
-    if (!selectedTeacher) return defaultTableData
+    if (!selectedTeacher) return getDefaultTableData()
 
     return buildTableForTeacher({
       lessons,

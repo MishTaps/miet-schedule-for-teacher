@@ -1,7 +1,7 @@
 import { Button, Divider, Empty, message, Table } from 'antd'
 import { useMemo } from 'react'
 import type { ColumnType } from 'antd/es/table'
-import { columnsConfigDays, columnsConfigWeeks } from '../MainWorkplace/tableConfig/columnsConfig'
+import { getColumnsConfigDays, getColumnsConfigWeeks } from '../MainWorkplace/tableConfig/columnsConfig'
 import type { ScheduleRecord, WeekTypes } from '@/types'
 import { useFiltrationSettingsStore, useTeachersStore, useVisualSettingsStore } from '@/stores'
 import { useTranslation } from 'react-i18next'
@@ -29,7 +29,7 @@ export const ScheduleTable: React.FC<ScheduleTable> = ({ tableData }) => {
 
   const isTeacherAvailable = selectedTeacher && teachers.includes(selectedTeacher)
 
-  const columnsConfig = sortColumnType == 'day' ? columnsConfigDays : columnsConfigWeeks
+  const columnsConfig = sortColumnType == 'day' ? getColumnsConfigDays(t) : getColumnsConfigWeeks(t)
 
   const visibleColumns = useMemo(() => {
     const isWeekTypeColumnEmpty = (dayKey: string, weekType: string) => {

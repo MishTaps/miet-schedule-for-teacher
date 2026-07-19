@@ -3,10 +3,10 @@ export const en = {
   loading: 'Loading...',
   cashed: {
     button: 'Load again',
-    day: 'Schedule loaded {{formattedDate}}',
-    week: 'Schedule loaded more than a day ago: {{formattedDate}}',
-    month: 'Schedule loaded more than a week ago: {{formattedDate}}',
-    halfOfYear: 'Schedule loaded more than a month ago: {{formattedDate}}',
+    day: 'The schedule was uploaded on {{formattedDate}}',
+    week: 'The schedule was uploaded more than a day ago: {{formattedDate}}',
+    month: 'The schedule was uploaded more than a week ago: {{formattedDate}}',
+    halfOfYear: 'The schedule was uploaded more than a month ago: {{formattedDate}}',
   },
   export: {
     header: 'Exporting a schedule to your calendar',
@@ -124,22 +124,33 @@ export const en = {
   },
   weeks: {
     weekType0: {
-      longName: 'Числитель I',
-      shortName: 'Числ-I',
+      longName: 'Odd I (Chislitel I)',
+      shortName: 'Odd I',
     },
     weekType1: {
-      longName: 'Знаменатель I',
-      shortName: 'Знам-I',
+      longName: 'Even I (Znamenatel I)',
+      shortName: 'Even I',
     },
     weekType2: {
-      longName: 'Числитель II',
-      shortName: 'Числ-II',
+      longName: 'Odd II (Chislitel II)',
+      shortName: 'Odd II',
     },
     weekType3: {
-      longName: 'Знаменатель II',
-      shortName: 'Знам-II',
+      longName: 'Even II (Znamenatel II)',
+      shortName: 'Even II',
     },
     allWeekTypes: 'All week types',
+  },
+  time: {
+    header: 'Class Time',
+    class1: '1 class\n09:00 - 10:20',
+    class2: '2 class\n10:30 - 11:50',
+    class3: '3 class\n12:00 - 13:20\n12:30 - 13:50',
+    class4: '4 class\n14:00 - 15:20',
+    class5: '5 class\n15:30 - 16:50',
+    class6: '6 class\n17:00 - 18:20',
+    class7: '7 class\n18:30 - 19:50',
+    class8: '8 class\n20:00 - 21:20',
   },
   table: {
     header: "Teacher's schedule",

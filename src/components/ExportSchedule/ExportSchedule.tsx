@@ -38,11 +38,11 @@ type ParsedLesson = {
 }
 
 export const ExportSchedule: React.FC<ExportSchedule> = ({ tableData }) => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const selectedTeacher = useTeachersStore((state) => state.selectedTeacher)
 
-  dayjs.locale('ru')
+  dayjs.locale(i18n.language === 'ru' ? 'ru' : 'en')
   const [startWeek, setStartWeek] = useState<Dayjs | null>(null)
   const [endWeek, setEndWeek] = useState<Dayjs | null>(null)
 
