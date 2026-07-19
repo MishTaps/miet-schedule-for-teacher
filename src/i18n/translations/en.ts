@@ -51,6 +51,7 @@ export const en = {
           'The application is not available for installation through your browser or the application is already installed',
         text: 'Download the application (PWA)',
       },
+      support: 'Support the author',
     },
   },
   getSchedule: {

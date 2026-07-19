@@ -92,7 +92,7 @@ export const Footer = () => {
           href="https://pay.cloudtips.ru/p/c9614daa"
           target="_blank"
         >
-          Поддержать автора
+          {t('footer.button.support')}
         </Button>
       </Flex>
     </footer>
