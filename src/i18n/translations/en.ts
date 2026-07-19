@@ -23,7 +23,7 @@ export const en = {
         title: 'Select a period',
         description: {
           p1: 'Classes will be added to the calendar only within this period — outside of it, classes will not be created in the calendar.',
-          p2: '<bold>Attention!</bold><br />The starting week of the export will be determined as <bold>Числитель I</bold>',
+          p2: '<bold>Attention!</bold><br />The starting week of the export will be determined as <bold>Odd I (Chislitel I)</bold>',
         },
       },
       step3: {

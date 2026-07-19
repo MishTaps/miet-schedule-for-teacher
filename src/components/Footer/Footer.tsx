@@ -14,7 +14,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export const Footer = () => {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isInstallAvailable, setIsInstallAvailable] = useState(false)
@@ -56,7 +56,7 @@ export const Footer = () => {
 
   return (
     <footer>
-      <p>
+      <p key={i18n.language}>
         <Trans i18nKey="footer.info" components={{ bold: <b /> }} />
       </p>
       <Flex gap="small" wrap>
